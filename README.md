@@ -62,7 +62,7 @@ Useful options:
 
 | option | default | purpose |
 |---|---|---|
-| `--width` | 8 | track width (m). Measure it in Google Earth with the ruler tool. |
+| `--width` | 10 | track width (m). Measure it in Google Earth with the ruler tool. |
 | `--kerb` / `--kerb-height` | 0.6 / 0.04 | kerb strip each side (0 disables) |
 | `--runoff` | 4 | grass/run-off each side, blended from road height down to the terrain |
 | `--terrain` | 40 | with `--dem`: LIDAR ground mesh reaching this far beyond the track (0 disables). It sits just under the road and run-off, so it never pokes through |

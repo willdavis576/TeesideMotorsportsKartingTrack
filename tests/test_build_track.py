@@ -61,16 +61,20 @@ def test_build(tmp_path):
     assert {"road", "kerbL", "kerbR", "runoffL", "runoffR", "terrain"} <= set(faces)
 
     # The terrain grid must never poke through the road: every terrain vertex under the road
-    # (within half-width + kerb of the centreline) sits below the road surface there.
+    # (within half-width + kerb of the centreline) sits well below the road surface there,
+    # and no terrain cell lies entirely under the road.
     import csv
     from scipy.spatial import cKDTree
     cl = np.array([[float(r["x"]), float(r["y_up"]), float(r["z"])]
                    for r in csv.DictReader(open(out / "centreline.csv"))])
     tv = v[np.unique(np.array(faces["terrain"]).ravel())]
     dist, near = cKDTree(cl[:, [0, 2]]).query(tv[:, [0, 2]])
-    under = dist <= 4.6
+    under = dist <= 5.6  # default 10 m width: 5 m half-width + 0.6 m kerb
     assert under.sum() > 100
-    assert (tv[under, 1] < cl[near[under], 1]).all()
+    assert (tv[under, 1] < cl[near[under], 1] - 0.2).all()
+    tf = np.array(faces["terrain"])
+    centre = v[tf].mean(axis=1)
+    assert (cKDTree(cl[:, [0, 2]]).query(centre[:, [0, 2]])[0] > 2.0).all()
 
 
 def test_flatten_removes_mound(tmp_path):
@@ -111,7 +115,7 @@ def test_tight_hairpins_keep_runoff_unfolded(tmp_path):
     out = tmp_path / "build"
     res = subprocess.run([sys.executable, str(ROOT / "tools/build_track.py"), str(kml), "--out-dir", str(out),
                           "--smooth-xy", "1"], check=True, capture_output=True, text=True)
-    assert "WARNING" not in res.stderr  # 7 m radius > 4.6 m half-width + kerb: the road itself is fine
+    assert "WARNING" not in res.stderr  # 7 m radius > 5.6 m half-width + kerb: the road itself is fine
 
     v, faces, cur = [], {}, None
     for line in (out / "track.obj").read_text().splitlines():

@@ -216,11 +216,13 @@ def fill_nan(z):
 
 # -------------------------------------------------------------------------- mesh
 
-def build_terrain(dem, pts, zc, edge, runoff, margin, res, sink=0.05):
+def build_terrain(dem, pts, zc, edge, runoff, margin, res, sink=0.05, road_sink=0.3):
     """Regular DEM grid around the track that stays just under the road and run-off.
 
-    Returns (east, north, z, valid) arrays of shape (rows, cols). Under the road and kerbs the
-    ground is pushed below the road surface; across the run-off it follows the same blend from
+    Returns (east, north, z, valid, hidden) arrays of shape (rows, cols). `hidden` marks points far
+    enough inside the road that any grid cell whose corners are all hidden lies entirely under the
+    tarmac; those cells are dropped (they would only z-fight with the road). Elsewhere under the
+    road and kerbs the ground is pushed `road_sink` below the road surface; across the run-off it follows the same blend from
     road height to measured ground that the run-off strip uses, minus `sink`; beyond that it is
     the raw DEM.
     """
@@ -239,10 +241,13 @@ def build_terrain(dem, pts, zc, edge, runoff, margin, res, sink=0.05):
     under_road = dist <= edge
     f = np.clip((dist - edge) / max(runoff, 1e-6), 0, 1)
     blended = (1 - f) * z_road + f * Z - sink
-    Z = np.where(under_road, z_road - 2 * sink, np.where(dist < edge + runoff, np.fmin(Z, blended), Z))
+    Z = np.where(under_road, z_road - road_sink, np.where(dist < edge + runoff, np.fmin(Z, blended), Z))
     # Points under the track with no DEM value can still take the road height.
-    Z = np.where(np.isnan(Z) & (dist < edge + runoff), z_road - 2 * sink, Z)
-    return E, N, Z, ~np.isnan(Z)
+    Z = np.where(np.isnan(Z) & (dist < edge + runoff), z_road - road_sink, Z)
+    # Every point of a cell is within res/sqrt(2) of one of its corners, and distance to the
+    # centreline changes no faster than distance travelled, so this guarantees full coverage.
+    hidden = dist < edge - res * 0.71 - 0.1
+    return E, N, Z, ~np.isnan(Z), hidden
 
 
 def write_placeholder_textures(folder, size=512, seed=1):
@@ -298,8 +303,9 @@ class Mesh:
             faces.append(((a, ta), (b, tb), (c, tc), (d, td)))
         self.groups.setdefault((name, material), []).extend(faces)
 
-    def grid(self, name, material, xyz, valid, uv_scale):
-        """Triangulated height-field from an (rows, cols, 3) array; cells touching invalid points are skipped."""
+    def grid(self, name, material, xyz, valid, uv_scale, hidden=None):
+        """Triangulated height-field from an (rows, cols, 3) array. Cells touching invalid points,
+        or with all four corners hidden, are skipped."""
         rows, cols, _ = xyz.shape
         base, tbase = len(self.v), len(self.vt)
         self.v += [tuple(p) for p in xyz.reshape(-1, 3)]
@@ -309,6 +315,9 @@ class Mesh:
         for r in range(rows - 1):
             for c in range(cols - 1):
                 if not (valid[r, c] and valid[r, c + 1] and valid[r + 1, c] and valid[r + 1, c + 1]):
+                    continue
+                if hidden is not None and (hidden[r, c] and hidden[r, c + 1]
+                                           and hidden[r + 1, c] and hidden[r + 1, c + 1]):
                     continue
                 # Row index increases southwards, column eastwards: (r+1,c) -> (r+1,c+1) -> (r,c+1)
                 # is counter-clockwise seen from above.
@@ -342,7 +351,7 @@ def main():
     ap.add_argument("centreline", help=".kml / .gpx / .geojson")
     ap.add_argument("--way-id", type=int, help="OSM way id to use from a GeoJSON with several")
     ap.add_argument("--dem", help="GeoTIFF elevation model (EA LIDAR DTM recommended)")
-    ap.add_argument("--width", type=float, default=8.0, help="track width in metres (default 8)")
+    ap.add_argument("--width", type=float, default=10.0, help="track width in metres (default 10)")
     ap.add_argument("--kerb", type=float, default=0.6, help="kerb width each side, 0 to disable")
     ap.add_argument("--kerb-height", type=float, default=0.04)
     ap.add_argument("--runoff", type=float, default=4.0, help="grass/run-off width each side")
@@ -499,10 +508,10 @@ def main():
 
     terrain_cells = 0
     if dem and args.terrain > 0:
-        E, N, Z, valid = build_terrain(dem, pts, zc, edge, args.runoff, args.terrain, args.terrain_res)
+        E, N, Z, valid, hidden = build_terrain(dem, pts, zc, edge, args.runoff, args.terrain, args.terrain_res)
         xyz = np.stack([E - origin_en[0], Z - origin_z, -(N - origin_en[1])], axis=-1)
         before = sum(len(f) for f in mesh.groups.values())
-        mesh.grid("terrain", "terrain", np.nan_to_num(xyz), valid, uv_scale=10.0)
+        mesh.grid("terrain", "terrain", np.nan_to_num(xyz), valid, uv_scale=10.0, hidden=hidden)
         terrain_cells = sum(len(f) for f in mesh.groups.values()) - before
         if not valid.all():
             print(f"WARNING: {1 - valid.mean():.0%} of the terrain area has no DEM data and was left out; "

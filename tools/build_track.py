@@ -274,8 +274,9 @@ def build_terrain(dem, pts, zc, edge, runoff, margin, res, sink=0.05, road_sink=
 
 
 def write_placeholder_textures(folder, size=512, seed=1):
-    """Simple procedural textures matching the OBJ's UV layout. Existing files are left alone,
-    so replace them with real photo textures whenever you like."""
+    """Simple procedural textures matching the OBJ's UV layout, as .png plus a .dds copy for rF2.
+    Existing PNGs are left alone, so replace them with real textures whenever you like; the .dds
+    is regenerated whenever its PNG is newer."""
     import matplotlib.pyplot as plt
     folder.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(seed)
@@ -292,6 +293,11 @@ def write_placeholder_textures(folder, size=512, seed=1):
         path = folder / f"{name}.png"
         if not path.exists():
             plt.imsave(path, np.clip(rgb, 0, 1))
+        dds = path.with_suffix(".dds")  # rF2's usual texture format, with mipmaps
+        if not dds.exists() or dds.stat().st_mtime < path.stat().st_mtime:
+            from png_to_dds import write_dds
+            from PIL import Image
+            write_dds(np.asarray(Image.open(path).convert("RGBA")), dds)
 
     fine, coarse = noise(256)[..., None], noise(16)[..., None]
     # Road: U runs across the track (0..1 = full width), V along it (1.0 = 5 m).

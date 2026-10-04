@@ -65,6 +65,20 @@ where this guide names a menu, check it against the version you have.
    ```
    You can paste lines across if 3DSimED left a flag out.
 
+## Textures: point the materials at the .dds files
+
+The GMTs don't contain textures. Each material just names its texture file, which must sit in the track folder.
+The build writes every texture as `.png` and as `.dds` (with mipmaps) in `build/textures/`. rF2 tracks normally
+use `.dds`, so:
+
+1. In 3DSimED's **Material Edit** panel, pick each material from the *Material List* and change
+   **Primary Texture Map → texture map** from `<name>.png` to `<name>.dds` (e.g. `road_asphalt.dds`).
+   Don't change the material *Name*.
+2. Export again (*Export → rFactor2 → Save rFactor2 objects*) and run `tools/patch_scn.py` on the new `.scn`.
+3. Copy `build/textures/*.dds` into the track folder alongside the GMTs.
+
+To convert your own textures later (real asphalt photos and so on): `python tools/png_to_dds.py path/to/folder`.
+
 ## Shaders: the two-pass approach
 
 Do the shaders in two passes rather than all at once in 3DSimED.

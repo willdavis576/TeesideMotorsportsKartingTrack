@@ -79,6 +79,7 @@ Output in `build/`:
 - `track.obj` / `track.mtl` — separate objects for `road`, `kerbL/R`, `runoffL/R` and `terrain` (the LIDAR ground grid).
   Units are metres, Y is up, and the origin is at the start/finish line. It imports into Blender
   with the default OBJ settings.
+- `textures/` — simple starter textures (asphalt, red/white kerb, grass, terrain) matching the UV layout. Existing files are never overwritten, so you can drop real textures in with the same names.
 - `centreline.csv` — distance, local XYZ, heading and British National Grid coordinates for every metre.
 - `summary.json` — lap length, elevation range, max gradient, tightest corner radius.
 - `preview.png` — plan view labelled every 100 m (too-tight corners circled), and the elevation profile showing raw DEM vs. final road surface. Use the distance labels to match a bump in the profile to a spot on the track, then check it in Google Earth.

@@ -245,6 +245,37 @@ def build_terrain(dem, pts, zc, edge, runoff, margin, res, sink=0.05):
     return E, N, Z, ~np.isnan(Z)
 
 
+def write_placeholder_textures(folder, size=512, seed=1):
+    """Simple procedural textures matching the OBJ's UV layout. Existing files are left alone,
+    so replace them with real photo textures whenever you like."""
+    import matplotlib.pyplot as plt
+    folder.mkdir(parents=True, exist_ok=True)
+    rng = np.random.default_rng(seed)
+
+    def noise(scale):
+        # Tileable value noise: blur white noise with a wrapped box filter.
+        n = rng.random((size, size))
+        k = max(1, size // scale)
+        for axis in (0, 1):
+            n = sum(np.roll(n, i, axis=axis) for i in range(k)) / k
+        return (n - n.min()) / (np.ptp(n) + 1e-9)
+
+    def save(name, rgb):
+        path = folder / f"{name}.png"
+        if not path.exists():
+            plt.imsave(path, np.clip(rgb, 0, 1))
+
+    fine, coarse = noise(256)[..., None], noise(16)[..., None]
+    # Road: U runs across the track (0..1 = full width), V along it (1.0 = 5 m).
+    save("road", np.array([0.23, 0.23, 0.25]) + 0.10 * (fine - 0.5) + 0.05 * (coarse - 0.5))
+    # Kerb: 4 stripes per 5 m (1.25 m each), alternating red/white along the track.
+    v = np.arange(size)[:, None, None] / size
+    stripes = np.where((v * 4).astype(int) % 2 == 0, [0.75, 0.08, 0.08], [0.92, 0.92, 0.92])
+    save("kerb", np.broadcast_to(stripes, (size, size, 3)) * (0.92 + 0.08 * fine))
+    save("grass", np.array([0.22, 0.42, 0.16]) + 0.12 * (fine - 0.5) + 0.10 * (coarse - 0.5))
+    save("terrain", np.array([0.30, 0.40, 0.20]) + 0.10 * (fine - 0.5) + 0.15 * (coarse - 0.5))
+
+
 class Mesh:
     def __init__(self):
         self.v, self.vt, self.groups = [], [], {}
@@ -479,6 +510,10 @@ def main():
 
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
+    try:
+        write_placeholder_textures(out / "textures")
+    except ImportError:
+        pass
     mesh.write(out / "track.obj", {"road": (0.25, 0.25, 0.27), "kerb": (0.8, 0.1, 0.1),
                                     "grass": (0.25, 0.5, 0.2), "terrain": (0.35, 0.45, 0.25)})
 

@@ -726,3 +726,28 @@ Instance=vergeR_w4_n0
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
 	MeshFile=verger_w4_n0.gmt CollTarget=False HATTarget=False 
 }
+Instance=xfinish
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xfinish.gmt CollTarget=False HATTarget=False 
+}
+Instance=xpitin
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xpitin.gmt CollTarget=False HATTarget=False 
+}
+Instance=xpitout
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xpitout.gmt CollTarget=False HATTarget=False 
+}
+Instance=xsector1
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xsector1.gmt CollTarget=False HATTarget=False 
+}
+Instance=xsector2
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xsector2.gmt CollTarget=False HATTarget=False 
+}

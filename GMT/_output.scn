@@ -19,447 +19,447 @@ View=mainview
 Instance=kerbL_e0_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_e0_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_e0_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_e0_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_e0_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_e1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_e1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_e1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_e1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_e1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_e1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_w1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_w1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_w1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_w1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_w1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_w1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_w2_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_w2_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_w2_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_w2_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_w2_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_w2_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_w2_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_w2_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_w2_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_w3_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_w3_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_w3_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_w3_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_w3_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_w3_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_w3_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_w3_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_w3_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbL_w4_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbl_w4_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbl_w4_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_e0_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_e0_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_e0_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_e0_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_e0_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_e1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_e1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_e1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_e1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_e1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_e1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_w1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_w1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_w1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_w2_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_w2_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_w2_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_w2_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_w2_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_w2_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_w3_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_w3_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_w3_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_w3_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_w3_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_w3_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_w3_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_w3_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_w3_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=kerbR_w4_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=kerbr_w4_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=kerbr_w4_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=road_e0_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_e0_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_e0_n0.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_e0_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_e0_s1.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_e1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_e1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_e1_n0.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_e1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_e1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_e1_s1.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_w1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_w1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_w1_n0.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_w2_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_w2_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_w2_n0.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_w2_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_w2_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_w2_s1.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_w2_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_w2_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_w2_s2.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_w3_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_w3_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_w3_n0.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_w3_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_w3_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_w3_s1.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_w3_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_w3_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_w3_s2.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=road_w4_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=road_w4_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=road_w4_n0.gmt CollTarget=True HATTarget=True Deformable=True 
 }
 Instance=runoffL_e0_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_e0_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_e0_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_e0_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_e0_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_e1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_e1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_e1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_e1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_e1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_e1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w2_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w2_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w2_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w2_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w2_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w2_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w2_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w2_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w2_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w3_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w3_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w3_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w3_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w3_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w3_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w3_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w3_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w3_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w4_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w4_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w4_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffL_w4_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffl_w4_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffl_w4_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_e0_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_e0_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_e0_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_e0_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_e0_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_e1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_e1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_e1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_e1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_e1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_e1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_w1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_w1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_w1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_w2_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_w2_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_w2_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_w2_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_w2_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_w2_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_w3_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_w3_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_w3_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_w3_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_w3_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_w3_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_w3_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_w3_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_w3_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=runoffR_w4_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=runoffr_w4_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=runoffr_w4_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e0_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e0_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e0_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e0_n1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e0_n1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e0_n1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e0_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e0_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e0_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e0_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e0_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e1_n1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e1_n1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e1_n1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e1_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e1_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e1_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e2_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e2_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e2_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e2_n1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e2_n1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e2_n1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e2_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e2_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e2_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_e2_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_e2_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_e2_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w1_n1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w1_n1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w1_n1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w1_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w1_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w1_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w2_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w2_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w2_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w2_n1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w2_n1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w2_n1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w2_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w2_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w2_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w2_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w2_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w2_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w3_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w3_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w3_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w3_n1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w3_n1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w3_n1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w3_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w3_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w3_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w3_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w3_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w3_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w4_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w4_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w4_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w4_n1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w4_n1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w4_n1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w4_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w4_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w4_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=terrain_w4_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=terrain_w4_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=terrain_w4_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=tyrewall_collision_e0_n0
 {
@@ -604,125 +604,150 @@ Instance=tyrewall_w4_s1
 Instance=vergeL_e0_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_e0_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_e0_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_e0_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_e0_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_e1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_e1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_e1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_e1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_e1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_e1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_w1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_w1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_w1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_w1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_w1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_w1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_w2_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_w2_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_w2_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_w2_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_w2_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_w2_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_w2_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_w2_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_w2_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_w3_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_w3_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_w3_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_w3_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_w3_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_w3_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_w3_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_w3_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_w3_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeL_w4_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=vergel_w4_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=vergel_w4_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_e0_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_e0_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_e0_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_e0_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_e0_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_e1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_e1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_e1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_e1_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_e1_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_e1_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_w1_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_w1_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_w1_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_w2_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_w2_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_w2_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_w2_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_w2_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_w2_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_w2_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_w2_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_w2_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_w3_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_w3_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_w3_n0.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_w3_s1
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_w3_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_w3_s1.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_w3_s2
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_w3_s2.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_w3_s2.gmt CollTarget=True HATTarget=True 
 }
 Instance=vergeR_w4_n0
 {
 	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
-	MeshFile=verger_w4_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN 
+	MeshFile=verger_w4_n0.gmt CollTarget=True HATTarget=True 
+}
+Instance=xfinish
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xfinish.gmt CollTarget=True HATTarget=False Render=False Response=VEHICLE,TIMING 
+}
+Instance=xpitin
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xpitin.gmt CollTarget=True HATTarget=False Render=False Response=VEHICLE,PITSTOP 
+}
+Instance=xpitout
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xpitout.gmt CollTarget=True HATTarget=False Render=False Response=VEHICLE,PITSTOP 
+}
+Instance=xsector1
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xsector1.gmt CollTarget=True HATTarget=False Render=False Response=VEHICLE,TIMING 
+}
+Instance=xsector2
+{
+	VisGroups=(32)ReflectPlane=(0.000, 1.000, 0.000, 0.000) 
+	MeshFile=xsector2.gmt CollTarget=True HATTarget=False Render=False Response=VEHICLE,TIMING 
 }

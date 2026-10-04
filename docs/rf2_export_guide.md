@@ -35,9 +35,10 @@ where this guide names a menu, check it against the version you have.
    through to the GMT files.
 2. **Check scale and orientation.** The road is 10 m wide and the start/finish line is at the origin. If the
    track is lying on its side or 100× too big, re-export from Blender with the settings above.
-3. **Assign rF2 shaders to the materials.** Keep the material names exactly as they are, because the surface
-   physics depends on them. The 2025 Blender-only tutorial uses the **Real Road** shader on the road, set up in
-   3DSimED. rF2 tracks normally use `.dds` textures, so convert the PNGs if your version doesn't do it for you.
+3. **Assign a simple rF2 shader to each material** with its diffuse texture, keeping the material names exactly as
+   they are (the surface physics depends on them). The proper road/kerb shaders come later in ModDev; see
+   "Shaders: the two-pass approach" below. rF2 tracks normally use `.dds` textures, so convert the PNGs if your
+   version doesn't do it for you.
 4. **Set the instance flags** for each object. Open `build/scene_instances.txt` alongside; it lists the
    recommended flags for every piece:
 
@@ -56,6 +57,30 @@ where this guide names a menu, check it against the version you have.
    ```
    You can paste lines across if 3DSimED left a flag out.
 
+## Shaders: the two-pass approach
+
+Do the shaders in two passes rather than all at once in 3DSimED.
+
+**Pass 1, in 3DSimED: get it in game with simple materials.** Give every material a basic rF2 shader with just
+its diffuse (colour) texture, keeping the material names unchanged, and export. The aim is only a track that
+loads with the right textures. Studio 397 documents a fuller Real Road setup in 3DSimED too (several texture
+stages and extra UV channels), but it's easier to do that in pass 2.
+
+**Pass 2, in ModDev: switch to the proper rF2 shaders with the Material Editor.** Studio 397 documents a
+**Material Editor** that opens while the track is loaded in ModDev's Scene Viewer or Developer Mode. It can change the
+shader, settings and texture maps of every loaded material, and saves the result to `.json` files that
+**override what's in the GMTs**. So nothing needs re-exporting while you tune.
+
+| Material | Shader | Texture maps |
+|---|---|---|
+| `road_asphalt` | **L2IBLROAD** (IBL road) | `albedoMap`: road colour, with a roughness mask in the alpha channel · `overlayMap`: fine asphalt detail (RGB multiplies the colour, A adjusts roughness) · `grooveMap`: two-channel mask for the rubbered-in racing line. It also supports Real Road groove, marbles, dust and wet effects |
+| `rmbl_kerb` | **L2IBLCURB** (IBL kerb) | As for the road, with the red/white kerb as the albedo |
+| `gras_verge`, `grxs_terrain` | A standard (non-road) IBL/PBR shader | Albedo, plus a normal map if you have one |
+| `tyrewall`, buildings | Standard IBL/PBR shader | Albedo (+ normal/roughness if available) |
+
+Studio 397's PBR guide and the "Roads Materials (Asphalt / Concrete)" page give suggested values. Use the
+real asphalt colour from the video stills as a reference.
+
 ## C. Check before moving on
 
 - Open the `.scn` in **gJED** or 3DSimED and confirm all 142 pieces load with textures.
@@ -71,5 +96,9 @@ where this guide names a menu, check it against the version you have.
 - [Track Creation Cheat Sheet – rF2 Developers Guide](https://docs.studio-397.com/display/DG/Track+Creation+Cheat+Sheet)
 - [rFactor 2 Track Development with Blender only (2025)](https://www.patreon.com/posts/143569923)
 - [Some help with rFactor material names (OverTake)](https://www.overtake.gg/threads/some-help-with-rfactor-material-names.12452/)
+- [IBL Road & Curb Shaders – rF2 Developers Guide](https://docs.studio-397.com/pages/viewpage.action?pageId=37945407)
+- [Roads Materials (Asphalt / Concrete) – rF2 Developers Guide](https://docs.studio-397.com/pages/viewpage.action?pageId=37945832)
+- [PBR – A Guide in rFactor2 – rF2 Developers Guide](https://docs.studio-397.com/display/DG/PBR+-+A+Guide+in+rFactor2)
+- [3DSimED help (PDF)](http://www.sim-garage.co.uk/files/3DSimEDHelp.pdf)
 - [3DSimEd – Simwiki](https://www.simwiki.net/wiki/3DSimEd)
 - [3DSimEd import/export video tutorial](https://www.youtube.com/watch?v=g8o915_akRw)

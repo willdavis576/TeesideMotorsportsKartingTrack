@@ -81,3 +81,38 @@ def test_flatten_removes_mound(tmp_path):
     flat = run("--flatten", "570:60")  # mound straddles the start line, so the range wraps
     assert flat["elevation_range_m"] < 0.05
     assert flat["flattened"] == [[570.0, 60.0]]
+
+
+def test_tight_hairpins_keep_runoff_unfolded(tmp_path):
+    # Stadium shape: two 60 m straights joined by 7 m-radius hairpins (a normal kart hairpin).
+    r, L = 7.0, 60.0
+    pts = [(x, -r) for x in np.arange(0, L, 1.0)]
+    pts += [(L + r * np.sin(a), -r * np.cos(a)) for a in np.arange(0, np.pi, 0.1)]
+    pts += [(x, r) for x in np.arange(L, 0, -1.0)]
+    pts += [(-r * np.sin(a), r * np.cos(a)) for a in np.arange(0, np.pi, 0.1)]
+    to_ll = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
+    lon, lat = to_ll.transform(452000 + np.array(pts)[:, 0], 520500 + np.array(pts)[:, 1])
+    kml = tmp_path / "hairpin.kml"
+    kml.write_text('<kml xmlns="http://www.opengis.net/kml/2.2"><Placemark><LineString><coordinates>'
+                   + " ".join(f"{a:.8f},{b:.8f}" for a, b in zip(lon, lat))
+                   + "</coordinates></LineString></Placemark></kml>")
+    out = tmp_path / "build"
+    res = subprocess.run([sys.executable, str(ROOT / "tools/build_track.py"), str(kml), "--out-dir", str(out),
+                          "--smooth-xy", "1"], check=True, capture_output=True, text=True)
+    assert "WARNING" not in res.stderr  # 7 m radius > 4.6 m half-width + kerb: the road itself is fine
+
+    v, faces, cur = [], {}, None
+    for line in (out / "track.obj").read_text().splitlines():
+        if line.startswith("v "):
+            v.append([float(c) for c in line.split()[1:]])
+        elif line.startswith("o "):
+            cur = line.split()[1]
+        elif line.startswith("f "):
+            faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
+    v = np.array(v)
+    for name, fs in faces.items():
+        f = np.array(fs)
+        # Both triangles of each quad must face up, otherwise the strip has folded over itself.
+        for tri in ((0, 1, 2), (0, 2, 3)):
+            nrm = np.cross(v[f[:, tri[1]]] - v[f[:, tri[0]]], v[f[:, tri[2]]] - v[f[:, tri[0]]])
+            assert (nrm[:, 1] > -1e-9).all(), f"{name} folds over itself in a hairpin"

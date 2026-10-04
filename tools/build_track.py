@@ -110,7 +110,7 @@ def dedupe(xy, tol=0.05):
 def resample(xy, step, closed):
     """Evenly resample a polyline every `step` metres (linear)."""
     pts = np.vstack([xy, xy[:1]]) if closed else xy
-    seg = np.linalg.norm(np.diff(pts, axis=0), axis=1)
+    seg = np.linalg.norm(np.diff(pts[:, :2], axis=0), axis=1)  # plan distance; altitude may be NaN
     s = np.concatenate([[0], np.cumsum(seg)])
     total = s[-1]
     n = max(int(round(total / step)), 4)
@@ -344,8 +344,38 @@ def main():
     def to_local(en_xy, z):
         return np.column_stack([en_xy[:, 0] - origin_en[0], z - origin_z, -(en_xy[:, 1] - origin_en[1])])
 
+    # Signed curvature (+ = turning left), lightly smoothed so one wobbly trace point doesn't dominate.
+    heading_rad = np.arctan2(t[:, 1], t[:, 0])
+    if closed:
+        dh = np.diff(heading_rad, append=heading_rad[0])
+    else:
+        dh = np.gradient(np.unwrap(heading_rad))
+    dh = (dh + np.pi) % (2 * np.pi) - np.pi  # per-sample turn, wrapped into [-pi, pi)
+    kappa = smooth(dh / args.step, max(1, int(round(3 / args.step)) | 1), closed)
+    radius = 1 / np.maximum(np.abs(kappa), 1e-9)
+
     def offset(d):
-        return pts[:, :2] + nrm * d
+        """Points offset sideways by d metres (left positive); d may be a scalar or per-sample array."""
+        return pts[:, :2] + nrm * np.reshape(d, (-1, 1))
+
+    def inside_clamped(d, floor):
+        """Shrink offsets on the inside of tight corners so run-off/terrain strips can't fold over."""
+        d = np.broadcast_to(np.asarray(d, dtype=float), radius.shape)
+        reach = float(np.abs(d).max())
+        # The narrowing has to start before the corner (within `reach` metres) or the strip
+        # folds at the corner entry/exit, so take the tightest radius nearby on that side.
+        win = max(1, int(round(2 * reach / args.step)) | 1)
+        out = d.copy()
+        for side in (1, -1):
+            r_side = np.where(kappa * side > 0, radius, np.inf)
+            pad = win // 2
+            ext = np.concatenate([r_side[-pad:], r_side, r_side[:pad]]) if closed else \
+                np.pad(r_side, pad, constant_values=np.inf)
+            near = np.lib.stride_tricks.sliding_window_view(ext, win).min(axis=1)
+            lim = np.maximum(0.85 * near, abs(floor))
+            sel = np.sign(d) == side
+            out[sel] = side * np.minimum(np.abs(d[sel]), lim[sel])
+        return out
 
     def terrain(d, fallback):
         if dem is None:
@@ -371,14 +401,16 @@ def main():
 
     # Run-off blends from road height to the measured terrain.
     for side, sgn in (("L", 1), ("R", -1)):
-        z_out = terrain(sgn * (edge + args.runoff), zc)
+        d_out = inside_clamped(sgn * (edge + args.runoff), floor=edge + 0.3)
+        z_out = terrain(d_out, zc)
         z_out = smooth(z_out, zwin, closed) if dem else z_out
         inner = to_local(offset(sgn * edge), zc)
-        outer = to_local(offset(sgn * (edge + args.runoff)), z_out)
+        outer = to_local(offset(d_out), z_out)
         a, b = (outer, inner) if sgn > 0 else (inner, outer)
         mesh.strip(f"runoff{side}", "grass", a, b, 0, args.runoff / 5, vdist, closed)
         if args.apron > 0:
-            d_far = sgn * (edge + args.runoff + args.apron)
+            d_far = inside_clamped(sgn * (edge + args.runoff + args.apron), floor=0)
+            d_far = np.sign(d_far) * np.maximum(np.abs(d_far), np.abs(d_out) + 0.3)
             far = to_local(offset(d_far), terrain(d_far, z_out))
             a, b = (far, outer) if sgn > 0 else (outer, far)
             mesh.strip(f"apron{side}", "terrain", a, b, 0, args.apron / 5, vdist, closed)
@@ -398,10 +430,9 @@ def main():
                         f"{args.width:.2f}", f"{h:.1f}", f"{pts[i, 0]:.2f}", f"{pts[i, 1]:.2f}"])
 
     grade = np.diff(zc) / args.step * 100
-    dh = np.diff(np.unwrap(np.arctan2(t[:, 1], t[:, 0])))
-    radius = args.step / np.maximum(np.abs(dh), 1e-9)
     min_radius = float(radius.min())
-    limit = edge + args.runoff
+    # Run-off and terrain are clamped automatically; only the road + kerbs can still fold.
+    limit = edge
     tight = []  # (distance, radius) of the tightest point in each run of too-tight samples
     run = []
     for i in list(range(len(radius))) + [None]:
@@ -413,9 +444,9 @@ def main():
             run = []
     if tight:
         where = ", ".join(f"{d} m (r={r} m)" for d, r in tight)
-        print(f"WARNING: corners tighter than half-width + kerb + run-off ({limit:.1f} m), where the inside "
-              f"edge will fold over itself: {where}. Re-trace those corners with more points, increase "
-              f"--smooth-xy, or reduce --runoff.", file=sys.stderr)
+        print(f"WARNING: corners tighter than half-width + kerb ({limit:.1f} m), where the inside edge of "
+              f"the road will fold over itself: {where}. Usually a kink in the trace - re-trace those "
+              f"corners with more evenly spaced points, or increase --smooth-xy.", file=sys.stderr)
     summary = {
         "length_m": round(float(len(pts) * args.step if closed else length), 1),
         "closed_loop": bool(closed),
@@ -448,7 +479,7 @@ def main():
                          ha="center", va="center", color="0.3")
         if tight:
             ti = [int(d / args.step) for d, _ in tight]
-            ax1.plot(local[ti, 0], -local[ti, 2], "o", mfc="none", mec="m", ms=10, label="too-tight corner")
+            ax1.plot(local[ti, 0], -local[ti, 2], "o", mfc="none", mec="m", ms=10, label="road folds here")
         ax1.plot(0, 0, "go", label="start/finish (origin)")
         ax1.annotate("", xy=(local[3, 0], -local[3, 2]), xytext=(0, 0), arrowprops={"arrowstyle": "->"})
         ax1.set_aspect("equal")

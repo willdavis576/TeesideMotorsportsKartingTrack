@@ -65,7 +65,7 @@ Useful options:
 | `--width` | 8 | track width (m). Measure it in Google Earth with the ruler tool. |
 | `--kerb` / `--kerb-height` | 0.6 / 0.04 | kerb strip each side (0 disables) |
 | `--runoff` | 4 | grass/run-off each side, blended from road height down to the terrain |
-| `--apron` | 25 | surrounding terrain strip from the DEM |
+| `--apron` | 25 | surrounding terrain strip from the DEM. On layouts where sections run close together, neighbouring sections' aprons overlap; use `--apron 0` there |
 | `--smooth-xy` | 4 | removes wobble from hand-traced paths |
 | `--smooth-z` | 15 | removes LIDAR noise (parked cars, etc.) from the road surface |
 | `--despike` | 11 | running-median window (m) that removes short bumps such as tyre walls or parked vehicles in the LIDAR |
@@ -81,9 +81,9 @@ Output in `build/`:
 - `summary.json` — lap length, elevation range, max gradient, tightest corner radius.
 - `preview.png` — plan view labelled every 100 m (too-tight corners circled), and the elevation profile showing raw DEM vs. final road surface. Use the distance labels to match a bump in the profile to a spot on the track, then check it in Google Earth.
 
-Check `summary.json` against the real circuit's published lap length. If you get a warning about a corner
-radius, a hairpin is tighter than half the track width. Fix it with more `--smooth-xy`, a smaller `--runoff`,
-or by hand in Blender.
+Check `summary.json` against the real circuit's published lap length. Run-off and apron automatically narrow on the
+inside of tight corners. If you get a warning that the *road* folds, the centreline has a kink tighter than half the
+track width: re-trace that corner with more, evenly spaced points or increase `--smooth-xy`.
 
 Run the tests with `python -m pytest tests`.
 

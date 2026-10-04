@@ -72,6 +72,11 @@ def test_folder_layout(tmp_path):
                     "--out", str(out)], check=True)
     assert aiw.read_text() == "recorded"
 
+    # Exactly one CR per line in the files rF2 parses (a doubled "\r\r\n" made rF2 skip the track).
+    for f in ("Teesside_Karting.gdb", "Teesside_Karting.scn"):
+        raw = (root / "Teesside_Karting" / f).read_bytes()
+        assert b"\r\r" not in raw and raw.count(b"\r\n") == raw.count(b"\n")
+
     gdb = (root / "Teesside_Karting" / "Teesside_Karting.gdb").read_text()
     assert gdb.startswith("Teesside_Karting")
     assert "TerrainDataFile=..\\TeessideKarting.tdf" in gdb

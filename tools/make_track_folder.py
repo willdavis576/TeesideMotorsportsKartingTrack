@@ -148,6 +148,13 @@ GDB = """{layout}
 """
 
 
+def write_crlf(path, text):
+    """Write with Windows line endings, byte for byte. (write_text would translate "\n" again on
+    Windows, turning "\r\n" into "\r\r\n", which rF2 can't parse.)"""
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    Path(path).write_bytes("\r\n".join(lines).encode("ascii", errors="replace"))
+
+
 def instance_blocks(scn_text):
     """Every `Instance=... { ... }` block from an exported .scn, as text (braces balanced)."""
     blocks, pos = [], 0
@@ -214,14 +221,14 @@ def main():
     # 3DSimED writes "VisGroups=(32)ReflectPlane=..."; the sample track separates them with a space.
     blocks = [re.sub(r"\)(?=[A-Za-z])", ") ", b) for b in instance_blocks(exported)]
     scn = SCN_HEADER.format(search_paths=search) + "\n".join(blocks) + "\n" + SKY_INSTANCE
-    (layout_out / f"{args.layout}.scn").write_text(scn.replace("\n", "\r\n"))
+    write_crlf(layout_out / f"{args.layout}.scn", scn)
 
     summary = json.loads(Path(args.summary).read_text())
     lon, lat = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True).transform(*summary["origin_bng"])
     km = summary["length_m"] / 1000
     gdb = GDB.format(layout=args.layout, folder=args.folder, track_name=args.track_name, venue=args.venue,
                      km=km, miles=km / 1.609344, lat=lat, lon=lon, alt=summary["origin_alt_m"])
-    (layout_out / f"{args.layout}.gdb").write_text(gdb.replace("\n", "\r\n"))
+    write_crlf(layout_out / f"{args.layout}.gdb", gdb)
 
     # rF2 only lists a layout that has an AIW (AI line, grid, garages) next to its .gdb and .scn. Until a
     # Teesside one is recorded, use the sample track's as a placeholder; never overwrite a real one.

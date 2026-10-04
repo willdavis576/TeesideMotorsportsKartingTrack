@@ -148,7 +148,8 @@ class DEM:
         import rasterio
         self.ds = rasterio.open(path)
         self.band = self.ds.read(1, masked=True)
-        self.to_dem = Transformer.from_crs(BNG, self.ds.crs, always_xy=True)
+        # EA .asc tiles often ship without a .prj; they are always British National Grid.
+        self.to_dem = Transformer.from_crs(BNG, self.ds.crs or BNG, always_xy=True)
 
     def sample(self, e, n):
         """Bilinear sample at BNG easting/northing arrays."""

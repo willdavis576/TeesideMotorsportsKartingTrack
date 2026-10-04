@@ -55,6 +55,8 @@ def test_build(tmp_path):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
     for name, fs in faces.items():
+        if name.startswith("tyrewall"):
+            continue  # vertical sides and n-gon caps; covered by test_tyre_walls
         f = np.array(fs)
         nrm = np.cross(v[f[:, 1]] - v[f[:, 0]], v[f[:, 2]] - v[f[:, 0]])
         assert (nrm[:, 1] > 0).mean() > 0.98, f"{name} faces should point up (+Y)"
@@ -127,8 +129,51 @@ def test_tight_hairpins_keep_runoff_unfolded(tmp_path):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
     for name, fs in faces.items():
+        if name.startswith("tyrewall"):
+            continue  # vertical sides and n-gon caps; covered by test_tyre_walls
         f = np.array(fs)
         # Both triangles of each quad must face up, otherwise the strip has folded over itself.
         for tri in ((0, 1, 2), (0, 2, 3)):
             nrm = np.cross(v[f[:, tri[1]]] - v[f[:, tri[0]]], v[f[:, tri[2]]] - v[f[:, tri[0]]])
             assert (nrm[:, 1] > -1e-9).all(), f"{name} folds over itself in a hairpin"
+
+
+def test_tyre_walls(tmp_path):
+    kml, dem, out = tmp_path / "t.kml", tmp_path / "dem.tif", tmp_path / "build"
+    make_kml(kml)
+    make_dem(dem)
+    subprocess.run([sys.executable, str(ROOT / "tools/build_track.py"), str(kml), "--dem", str(dem),
+                    "--out-dir", str(out)], check=True)
+    summary = json.loads((out / "summary.json").read_text())
+    assert summary["tyre_stacks"] > 50
+    assert summary["tyre_wall_collision_m"] > 20
+
+    import csv
+    from scipy.spatial import cKDTree
+    v, faces, cur = [], {}, None
+    for line in (out / "track.obj").read_text().splitlines():
+        if line.startswith("v "):
+            v.append([float(c) for c in line.split()[1:]])
+        elif line.startswith("o "):
+            cur = line.split()[1]
+        elif line.startswith("f "):
+            faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
+    v = np.array(v)
+    cl = np.array([[float(r["x"]), float(r["y_up"]), float(r["z"])]
+                   for r in csv.DictReader(open(out / "centreline.csv"))])
+    tree = cKDTree(cl[:, [0, 2]])
+
+    tyre_v = v[np.unique([i for f in faces["tyrewall"] for i in f])]
+    # Every tyre is beyond the road, kerb and run-off (5 + 0.6 + 4 m from the centreline).
+    assert tree.query(tyre_v[:, [0, 2]])[0].min() > 9.6 - 1e-6
+    # Tyres sit at ground level, not floating far above or buried below the track.
+    assert tyre_v[:, 1].min() > cl[:, 1].min() - 3
+
+    # Collision quads are vertical and face the track.
+    for f in faces["tyrewall_collision"]:
+        p = v[f]
+        nrm = np.cross(p[1] - p[0], p[3] - p[0])
+        assert abs(nrm[1]) < 1e-6 * np.linalg.norm(nrm) + 1e-9
+        centre = p.mean(axis=0)
+        towards = cl[tree.query(centre[[0, 2]])[1]] - centre
+        assert np.dot(nrm[[0, 2]], towards[[0, 2]]) > 0

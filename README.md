@@ -72,11 +72,17 @@ Useful options:
 | `--smooth-z` | 15 | removes LIDAR noise (parked cars, etc.) from the road surface |
 | `--despike` | 11 | running-median window (m) that removes short bumps such as tyre walls or parked vehicles in the LIDAR |
 | `--flatten START:END` | – | ignore the DEM between two lap distances and ramp straight across. Can be repeated, and can wrap past the start line (e.g. `1580:40`) |
+| `--tyre-corners` | 30 | tyre walls on the outside of every corner tighter than this radius (m). 0 disables |
+| `--tyre-extend` | 10 | carry each tyre wall this far before and after the corner (m) |
+| `--tyre-gap` | 0.5 | gap between the edge of the run-off and the tyres (m) |
 | `--reverse` | off | flip the driving direction |
 | `--start-offset` | 0 | move the start/finish line (and the origin) along the lap |
 
 Output in `build/`:
-- `track.obj` / `track.mtl` — separate objects for `road`, `kerbL/R`, `runoffL/R` and `terrain` (the LIDAR ground grid).
+- `track.obj` / `track.mtl` — separate objects for `road`, `kerbL/R`, `runoffL/R`, `terrain` (the LIDAR ground grid),
+  `tyrewall` (stacks of three tyres on the outside of corners) and `tyrewall_collision` (a simple 1 m wall along the
+  track-facing side of the tyres). In rF2 the collision wall should be invisible but collidable, so the karts hit a
+  clean surface instead of 12-sided cylinders. Tyres are left out wherever another part of the track runs close by.
   Units are metres, Y is up, and the origin is at the start/finish line. It imports into Blender
   with the default OBJ settings.
 - `textures/` — simple starter textures (asphalt, red/white kerb, grass, terrain) matching the UV layout. Existing files are never overwritten, so you can drop real textures in with the same names.

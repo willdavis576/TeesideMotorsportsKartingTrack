@@ -279,6 +279,65 @@ def write_placeholder_textures(folder, size=512, seed=1):
     save("kerb", np.broadcast_to(stripes, (size, size, 3)) * (0.92 + 0.08 * fine))
     save("grass", np.array([0.22, 0.42, 0.16]) + 0.12 * (fine - 0.5) + 0.10 * (coarse - 0.5))
     save("terrain", np.array([0.30, 0.40, 0.20]) + 0.10 * (fine - 0.5) + 0.15 * (coarse - 0.5))
+    # Tyre stack: V runs bottom to top over three tyres; dark grooves between them.
+    row = np.arange(size)[:, None, None] / size
+    groove = (np.abs((row * 3) % 1 - 0.5) > 0.44)
+    save("tyre", np.where(groove, 0.02, 0.09) + 0.03 * (fine - 0.5) + np.zeros((size, size, 3)))
+    save("collision", np.full((size, size, 3), [0.6, 0.6, 0.9]))
+
+
+def bool_runs(mask, closed):
+    """Index arrays of consecutive True runs; on a closed loop a run may wrap past the end."""
+    n = len(mask)
+    if mask.all():
+        return [np.arange(n)]
+    start = int(np.argmin(mask)) if closed else 0  # begin at a False so no run is split
+    order = (np.arange(n) + start) % n
+    runs, cur = [], []
+    for i in order:
+        if mask[i]:
+            cur.append(i)
+        elif cur:
+            runs.append(np.array(cur))
+            cur = []
+    if cur:
+        runs.append(np.array(cur))
+    return runs
+
+
+def dilate(mask, k, closed):
+    if k <= 0:
+        return mask
+    ext = np.concatenate([mask[-k:], mask, mask[:k]]) if closed else np.pad(mask, k)
+    return np.lib.stride_tricks.sliding_window_view(ext, 2 * k + 1).any(axis=1)
+
+
+def resample_polyline(xy, spacing):
+    seg = np.linalg.norm(np.diff(xy, axis=0), axis=1)
+    s = np.concatenate([[0], np.cumsum(seg)])
+    if s[-1] < spacing:
+        return xy[:1]
+    t = np.arange(0, s[-1] + 1e-9, spacing)
+    return np.column_stack([np.interp(t, s, xy[:, 0]), np.interp(t, s, xy[:, 1])])
+
+
+def tyre_stack(cx, cy, z0, radius, height, sides=12):
+    """Vertices, UVs and faces of one tyre stack (open-bottom cylinder) in east/north/up."""
+    a = np.linspace(0, 2 * np.pi, sides, endpoint=False)
+    ring = np.column_stack([cx + radius * np.cos(a), cy + radius * np.sin(a)])
+    verts, uvs = [], []
+    for z, v in ((z0, 0.0), (z0 + height, 1.0)):
+        for i in range(sides + 1):  # duplicate the seam so U runs 0..1
+            verts.append((*ring[i % sides], z))
+            uvs.append((i / sides, v))
+    m = sides + 1
+    faces = [(i, i + 1, m + i + 1, m + i) for i in range(sides)]  # CCW ring -> outward normals
+    cap0 = len(verts)
+    for i in range(sides):
+        verts.append((*ring[i], z0 + height))
+        uvs.append((0.5 + 0.5 * np.cos(a[i]), 0.5 + 0.5 * np.sin(a[i])))
+    faces.append(tuple(range(cap0, cap0 + sides)))  # top cap, CCW from above -> faces up
+    return verts, uvs, faces
 
 
 class Mesh:
@@ -325,6 +384,14 @@ class Mesh:
                 faces.append(tuple((i + base, i + tbase) for i in (a, b, cc, d)))
         self.groups.setdefault((name, material), []).extend(faces)
 
+    def polys(self, name, material, verts, uvs, faces):
+        """Arbitrary polygons; `faces` index into `verts`/`uvs` (same index for both)."""
+        base, tbase = len(self.v), len(self.vt)
+        self.v += [tuple(p) for p in verts]
+        self.vt += [tuple(t) for t in uvs]
+        self.groups.setdefault((name, material), []).extend(
+            tuple((base + i, tbase + i) for i in f) for f in faces)
+
     def write(self, obj_path, materials):
         obj_path = Path(obj_path)
         mtl = obj_path.with_suffix(".mtl")
@@ -367,6 +434,11 @@ def main():
                     help="running-median window (m) applied to road elevation before smoothing; 0 disables")
     ap.add_argument("--flatten", type=parse_range, action="append", default=[], metavar="START:END",
                     help="ignore the DEM between these lap distances (m) and ramp straight across; repeatable")
+    ap.add_argument("--tyre-corners", type=float, default=30.0,
+                    help="tyre walls on the outside of corners tighter than this radius (m); 0 disables")
+    ap.add_argument("--tyre-extend", type=float, default=10.0,
+                    help="carry tyre walls this far before and after each corner (m)")
+    ap.add_argument("--tyre-gap", type=float, default=0.5, help="gap between run-off edge and tyres (m)")
     ap.add_argument("--reverse", action="store_true", help="reverse driving direction")
     ap.add_argument("--start-offset", type=float, default=0.0,
                     help="move the start/finish (and origin) this many metres along the track")
@@ -517,6 +589,65 @@ def main():
             print(f"WARNING: {1 - valid.mean():.0%} of the terrain area has no DEM data and was left out; "
                   f"download the neighbouring LIDAR tiles or reduce --terrain.", file=sys.stderr)
 
+    tyre_stacks, wall_length = 0, 0.0
+    if args.tyre_corners > 0:
+        from scipy.spatial import cKDTree
+        tyre_r, tyre_h = 0.3, 0.6  # stack of three tyres
+        tree = cKDTree(pts[:, :2])
+        reach = edge + args.runoff + args.tyre_gap + tyre_r
+        ext = int(round(args.tyre_extend / args.step))
+        tv, tuv, tf, cv, cuv, cf = [], [], [], [], [], []
+        for turn in (1, -1):  # left-hand corners get a wall on the right, and vice versa
+            corner = dilate((kappa * turn > 0) & (radius < args.tyre_corners), ext, closed)
+            side = -turn
+            for run in bool_runs(corner, closed):
+                if len(run) < 3:
+                    continue
+                line = pts[run, :2] + nrm[run] * side * reach
+                centres = resample_polyline(line, 2 * tyre_r)
+                # Don't drop tyres onto another part of the track that runs close by.
+                keep = tree.query(centres)[0] > edge + args.runoff
+                for short in bool_runs(keep, closed=False):
+                    if len(short) < 6:  # drop odd leftover fragments shorter than ~3.5 m
+                        keep[short] = False
+                z = dem.sample(*centres.T) if dem else np.full(len(centres), np.nan)
+                z = np.where(np.isnan(z), zc[tree.query(centres)[1]], z) - 0.05
+                for (cx, cy), z0, k in zip(centres, z, keep):
+                    if not k:
+                        continue
+                    v_, uv_, f_ = tyre_stack(cx, cy, z0, tyre_r, tyre_h)
+                    tf += [tuple(len(tv) + i for i in f) for f in f_]
+                    tv += v_
+                    tuv += uv_
+                    tyre_stacks += 1
+                # Collision wall: a 1 m vertical ribbon along the track-facing side of each
+                # unbroken stretch of tyres, facing the track.
+                towards = tree.query(centres)[1]
+                inward = pts[towards, :2] - centres
+                inward /= np.linalg.norm(inward, axis=1, keepdims=True) + 1e-9
+                face_line = centres + inward * tyre_r
+                for seg in bool_runs(keep, closed=False):
+                    if len(seg) < 2:
+                        continue
+                    for a_, b_ in zip(seg[:-1], seg[1:]):
+                        p0, p1 = face_line[a_], face_line[b_]
+                        z0, z1 = z[a_], z[b_]
+                        quad = [(*p0, z0 - 0.1), (*p1, z1 - 0.1), (*p1, z1 + 1.0), (*p0, z0 + 1.0)]
+                        # Wind so the normal points at the track.
+                        e1, e2 = np.subtract(quad[1], quad[0]), np.subtract(quad[3], quad[0])
+                        if np.dot(np.cross(e1, e2)[:2], inward[a_]) < 0:
+                            quad = quad[::-1]
+                        cf.append(tuple(range(len(cv), len(cv) + 4)))
+                        cv += quad
+                        cuv += [(0, 0), (1, 0), (1, 1), (0, 1)]
+                        wall_length += float(np.linalg.norm(p1 - p0))
+        if tv:
+            tv = np.array(tv)
+            mesh.polys("tyrewall", "tyre", to_local(tv[:, :2], tv[:, 2]), tuv, tf)
+        if cv:
+            cv = np.array(cv)
+            mesh.polys("tyrewall_collision", "collision", to_local(cv[:, :2], cv[:, 2]), cuv, cf)
+
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     try:
@@ -524,7 +655,8 @@ def main():
     except ImportError:
         pass
     mesh.write(out / "track.obj", {"road": (0.25, 0.25, 0.27), "kerb": (0.8, 0.1, 0.1),
-                                    "grass": (0.25, 0.5, 0.2), "terrain": (0.35, 0.45, 0.25)})
+                                    "grass": (0.25, 0.5, 0.2), "terrain": (0.35, 0.45, 0.25),
+                                    "tyre": (0.05, 0.05, 0.05), "collision": (0.6, 0.6, 0.9)})
 
     local = to_local(pts[:, :2], zc)
     heading = np.degrees(np.arctan2(t[:, 0], t[:, 1])) % 360
@@ -566,6 +698,8 @@ def main():
         "origin_alt_m": round(float(origin_z), 2),
         "vertices": len(mesh.v),
         "terrain_cells": terrain_cells,
+        "tyre_stacks": tyre_stacks,
+        "tyre_wall_collision_m": round(wall_length, 1),
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2))
     print(json.dumps(summary, indent=2))

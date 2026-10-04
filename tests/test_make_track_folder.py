@@ -34,6 +34,8 @@ def test_folder_layout(tmp_path):
     (ref / "Sample.tdf").write_text("[FEEDBACK]\nMaterials=road\n")
     (ref / "Assets" / "GMT" / "skyboxi.gmt").write_bytes(b"sky")
     (ref / "Assets" / "Maps" / "BKA.DDS").write_bytes(b"skytex")
+    (ref / "Layout").mkdir()
+    (ref / "Layout" / "Sample.AIW").write_text("[Features]\n")
     summary = tmp_path / "summary.json"
     summary.write_text(json.dumps({"origin_bng": [452553.36, 520591.23], "origin_alt_m": 8.55, "length_m": 1629.0}))
     out = tmp_path / "Locations"
@@ -60,8 +62,19 @@ def test_folder_layout(tmp_path):
     assert "Response=VEHICLE,TIMING" in scn and "Response=VEHICLE,PITSTOP" in scn
     assert "Instance=SkyBoxi" in scn
 
+    aiw = root / "Teesside_Karting" / "Teesside_Karting.AIW"
+    assert aiw.read_text() == "[Features]\n"  # placeholder from the sample track
+
+    # A real AIW recorded later is never overwritten by a re-run.
+    aiw.write_text("recorded")
+    subprocess.run([sys.executable, str(ROOT / "tools/make_track_folder.py"), "--gmt", str(gmt),
+                    "--textures", str(tex), "--summary", str(summary), "--reference", str(ref),
+                    "--out", str(out)], check=True)
+    assert aiw.read_text() == "recorded"
+
     gdb = (root / "Teesside_Karting" / "Teesside_Karting.gdb").read_text()
     assert gdb.startswith("Teesside_Karting")
     assert "TerrainDataFile=..\\TeessideKarting.tdf" in gdb
     assert "Latitude = 54.57" in gdb and "Longitude = -1.18" in gdb
     assert "Length = 1.629 KM" in gdb
+    assert "Filter Properties = rFRS TMOD NSCRS IndyCar\r\n" in gdb or "Filter Properties = rFRS TMOD NSCRS IndyCar\n" in gdb

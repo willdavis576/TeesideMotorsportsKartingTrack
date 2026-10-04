@@ -10,6 +10,8 @@ surface-physics file and sky from:
         Assets/Maps/*.dds                      textures
         Teesside_Karting/Teesside_Karting.gdb  track info (name, location, length, time zone...)
         Teesside_Karting/Teesside_Karting.scn  scene: search paths, sun, fog + every exported instance
+        Teesside_Karting/Teesside_Karting.AIW  placeholder copy of the sample track's AIW (rF2 won't list a
+                                               layout without one) unless an AIW is already there
 
 Copy <out>/TeessideKarting into ...\\steamapps\\common\\rFactor 2\\ModDev\\Locations\\, or point
 --out straight at that Locations folder.
@@ -93,7 +95,7 @@ Instance=SkyBoxi
 
 GDB = """{layout}
 {{
-  Filter Properties = rFRS TMOD NSCRS IndyCar   // same as the ModDev sample track, so its sample car is allowed
+  Filter Properties = rFRS TMOD NSCRS IndyCar
   Attrition = 30
   TrackName = {track_name}
   EventName = {track_name}
@@ -173,6 +175,8 @@ def main():
     ap.add_argument("--layout", default="Teesside_Karting")
     ap.add_argument("--track-name", default="Teesside Karting")
     ap.add_argument("--venue", default="Teesside Motorsports")
+    ap.add_argument("--no-placeholder-aiw", action="store_true",
+                    help="don't copy the sample track's AIW when the layout has none")
     args = ap.parse_args()
 
     gmt_dir, ref = Path(args.gmt), Path(args.reference)
@@ -219,11 +223,28 @@ def main():
                      km=km, miles=km / 1.609344, lat=lat, lon=lon, alt=summary["origin_alt_m"])
     (layout_out / f"{args.layout}.gdb").write_text(gdb.replace("\n", "\r\n"))
 
+    # rF2 only lists a layout that has an AIW (AI line, grid, garages) next to its .gdb and .scn. Until a
+    # Teesside one is recorded, use the sample track's as a placeholder; never overwrite a real one.
+    aiw = layout_out / f"{args.layout}.AIW"
+    existing = [p for p in layout_out.glob("*") if p.suffix.lower() == ".aiw"]
+    sample_aiw = next((p for p in ref.rglob("*") if p.suffix.lower() == ".aiw"), None)
+    placeholder = False
+    if not existing and not args.no_placeholder_aiw:
+        if sample_aiw is None:
+            sys.exit(f"no .AIW under {ref} to use as a placeholder")
+        shutil.copy2(sample_aiw, aiw)
+        placeholder = True
+
     names = {re.match(r"Instance\s*=\s*(\S+)", b).group(1) for b in blocks}
     missing = sorted({"xfinish", "xsector1", "xsector2", "xpitin", "xpitout"} - names)
     print(f"Wrote {root}")
     print(f"  {len(gmts)} meshes + sky, {len(textures)} textures + sky texture, {len(blocks)} instances in the scene")
     print(f"  track info: {args.track_name}, {km:.3f} km, lat {lat:.5f} lon {lon:.5f}")
+    if placeholder:
+        print(f"  AIW: PLACEHOLDER copied from {sample_aiw.name} so rF2 lists the track. Its racing line, grid and "
+              f"garages are the sample track's, not Teesside's; replace it with a recorded one.")
+    elif existing:
+        print(f"  AIW: kept existing {existing[0].name}")
     if missing:
         print(f"WARNING: the export has no {', '.join(missing)}; rF2 needs these timing/pit gates", file=sys.stderr)
         return 1

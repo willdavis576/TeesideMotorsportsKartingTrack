@@ -1,5 +1,6 @@
 """Smoke test: synthetic kart layout + synthetic sloped DEM -> mesh with upward faces."""
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -50,7 +51,7 @@ def test_build(tmp_path):
         if line.startswith("v "):
             v.append([float(c) for c in line.split()[1:]])
         elif line.startswith("o "):
-            cur = line.split()[1]
+            cur = re.sub(r"_[+-]\d+_[+-]\d+$", "", line.split()[1])  # merge 100 m tiles
         elif line.startswith("f "):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
@@ -133,7 +134,7 @@ def test_tight_hairpins_keep_runoff_unfolded(tmp_path):
         if line.startswith("v "):
             v.append([float(c) for c in line.split()[1:]])
         elif line.startswith("o "):
-            cur = line.split()[1]
+            cur = re.sub(r"_[+-]\d+_[+-]\d+$", "", line.split()[1])  # merge 100 m tiles
         elif line.startswith("f "):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
@@ -164,7 +165,7 @@ def test_tyre_walls(tmp_path):
         if line.startswith("v "):
             v.append([float(c) for c in line.split()[1:]])
         elif line.startswith("o "):
-            cur = line.split()[1]
+            cur = re.sub(r"_[+-]\d+_[+-]\d+$", "", line.split()[1])  # merge 100 m tiles
         elif line.startswith("f "):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
@@ -186,3 +187,17 @@ def test_tyre_walls(tmp_path):
         centre = p.mean(axis=0)
         towards = cl[tree.query(centre[[0, 2]])[1]] - centre
         assert np.dot(nrm[[0, 2]], towards[[0, 2]]) > 0
+
+
+def test_tiles_keep_objects_small(tmp_path):
+    kml, dem, out = tmp_path / "t.kml", tmp_path / "dem.tif", tmp_path / "build"
+    make_kml(kml)
+    make_dem(dem)
+    subprocess.run([sys.executable, str(ROOT / "tools/build_track.py"), str(kml), "--dem", str(dem),
+                    "--out-dir", str(out), "--tile", "50"], check=True)
+    names = [l.split()[1] for l in (out / "track.obj").read_text().splitlines() if l.startswith("o ")]
+    assert len(names) == len(set(names)), "object names must be unique"
+    assert all(re.search(r"_[+-]\d+_[+-]\d+$", n) for n in names)
+    summary = json.loads((out / "summary.json").read_text())
+    assert summary["objects"] == len(names) > 20
+    assert summary["max_object_vertices"] < 65535

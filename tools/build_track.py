@@ -392,7 +392,10 @@ class Mesh:
         self.groups.setdefault((name, material), []).extend(
             tuple((base + i, tbase + i) for i in f) for f in faces)
 
-    def write(self, obj_path, materials):
+    def write(self, obj_path, materials, tile=0.0):
+        """Write OBJ + MTL. With `tile` > 0, every object is split into tile x tile metre pieces
+        (by face centre) named <object>_<col>_<row>, which game engines cull and load far better
+        than one huge mesh. Returns {object name: vertex count}."""
         obj_path = Path(obj_path)
         mtl = obj_path.with_suffix(".mtl")
         with open(mtl, "w") as f:
@@ -405,10 +408,23 @@ class Mesh:
                 f.write(f"v {x:.4f} {y:.4f} {z:.4f}\n")
             for u, v in self.vt:
                 f.write(f"vt {u:.4f} {v:.4f}\n")
+            counts = {}
+            verts = np.asarray(self.v)
             for (name, material), faces in self.groups.items():
-                f.write(f"o {name}\nusemtl {material}\n")
+                pieces = {}
                 for face in faces:
-                    f.write("f " + " ".join(f"{vi + 1}/{ti + 1}" for vi, ti in face) + "\n")
+                    if tile > 0:
+                        c = verts[[vi for vi, _ in face]].mean(axis=0)
+                        key = f"{name}_{int(np.floor(c[0] / tile)):+d}_{int(np.floor(-c[2] / tile)):+d}"
+                    else:
+                        key = name
+                    pieces.setdefault(key, []).append(face)
+                for key, fs in sorted(pieces.items()):
+                    f.write(f"o {key}\nusemtl {material}\n")
+                    for face in fs:
+                        f.write("f " + " ".join(f"{vi + 1}/{ti + 1}" for vi, ti in face) + "\n")
+                    counts[key] = len({vi for face in fs for vi, _ in face})
+            return counts
 
 
 # -------------------------------------------------------------------------- main
@@ -445,6 +461,8 @@ def main():
     ap.add_argument("--reverse", action="store_true", help="reverse driving direction")
     ap.add_argument("--start-offset", type=float, default=0.0,
                     help="move the start/finish (and origin) this many metres along the track")
+    ap.add_argument("--tile", type=float, default=100.0,
+                    help="split every object into tiles this size (m) for the game engine; 0 = one piece each")
     ap.add_argument("--out-dir", default="build")
     args = ap.parse_args()
 
@@ -678,9 +696,13 @@ def main():
         write_placeholder_textures(out / "textures")
     except ImportError:
         pass
-    mesh.write(out / "track.obj", {"road": (0.25, 0.25, 0.27), "kerb": (0.8, 0.1, 0.1),
+    object_verts = mesh.write(out / "track.obj", {"road": (0.25, 0.25, 0.27), "kerb": (0.8, 0.1, 0.1),
                                     "grass": (0.25, 0.5, 0.2), "terrain": (0.35, 0.45, 0.25),
-                                    "tyre": (0.05, 0.05, 0.05), "collision": (0.6, 0.6, 0.9)})
+                                    "tyre": (0.05, 0.05, 0.05), "collision": (0.6, 0.6, 0.9)}, tile=args.tile)
+    biggest = max(object_verts, key=object_verts.get)
+    if object_verts[biggest] > 65535:
+        print(f"WARNING: object {biggest} has {object_verts[biggest]} vertices; many game engines cap a mesh "
+              f"at 65,535. Use a smaller --tile.", file=sys.stderr)
 
     local = to_local(pts[:, :2], zc)
     heading = np.degrees(np.arctan2(t[:, 0], t[:, 1])) % 360
@@ -722,6 +744,8 @@ def main():
         "origin_alt_m": round(float(origin_z), 2),
         "vertices": len(mesh.v),
         "terrain_cells": terrain_cells,
+        "objects": len(object_verts),
+        "max_object_vertices": max(object_verts.values()),
         "tyre_stacks": tyre_stacks,
         "tyre_wall_collision_m": round(wall_length, 1),
     }

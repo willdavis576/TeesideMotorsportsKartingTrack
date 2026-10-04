@@ -124,24 +124,28 @@ The generated mesh is the base. The rest is normal track modelling:
 
 ## 5. Get it into rFactor 2
 
-You need the **rFactor 2 ModDev** tool (free with rF2 on Steam). Roughly:
+`track.obj` is already split into 100 m tiles (`--tile`), named `<object>_<col>_<row>`, so each piece
+stays small (the largest Teesside piece is ~17k vertices). Game engines cull and load small pieces much better.
 
-1. **Export to GMT.** rF2 uses its own gMotor `.gmt` mesh format. Studio 397's official exporter
-   is a 3ds Max plugin. Blender users usually either go through 3ds Max via FBX or use a
-   community Blender exporter. Check the Studio 397 forums for what currently works with your Blender version.
-2. **Create the track files** in a ModDev track folder:
-   - `.scn`: scene file listing every GMT, with collision/HAT flags on drivable surfaces
-   - `.gdb`: track info (name, location, length, lat/long, pit speed, etc.)
-   - `.tdf`: maps material names (road, kerb, grass…) to surface physics and sounds
-   - `.cam`: TV cameras
-   Copy these from the sample track that ships with ModDev and edit them. That is the most
-   reliable template.
-3. **Run the track in ModDev dev mode** to generate and edit the **AIW**: drive laps to record the
-   fast path, then set the start/finish, sector lines, pit lane, pit boxes, garages and grid spots in the AIW editor.
-4. **Package** with ModMgr into `.mas` files and an installable `.rfcmp`.
+Tools:
+- **rFactor 2 ModDev**: free with rF2 on Steam. Runs your track in dev mode, has the AIW editor, and ModMgr packages the mod.
+- **3DSimED3** (Mesh Development, paid): converts OBJ/FBX to rF2's `.gmt` mesh format, sets the rF2 shaders and
+  writes the `.scn`. This is the route current Blender-only tutorials use; Studio 397's own exporter is a 3ds Max plugin.
+- **gJED**: viewer/editor for existing `.scn`/`.gmt` files. Useful for checking the result.
 
-Test with an rF2 kart mod. Karts are very sensitive to bumps and track width, so it's worth
-taking a lap with a real kart's dimensions in mind before spending time on scenery.
+Steps:
+1. In Blender, finish the scenery and export to OBJ or FBX (keep one object per tile).
+2. In 3DSimED, import the model, assign rF2 shaders to the materials (road, kerb, grass, terrain, tyre), export the
+   GMTs and the `.scn`. Mark the road, kerb, verge, run-off and terrain objects as drivable/collidable, mark
+   `tyrewall_collision` as collidable but not rendered, and mark the tyre stacks as visual only.
+3. Put the GMTs, textures and `.scn` in a track folder under ModDev, with `.gdb` (track info), `.tdf` (surface
+   physics, keyed on material names) and `.cam` copied from an existing unencrypted track and edited.
+4. Load it in ModDev. In the AIW editor, drive laps to record the racing line, then set the start/finish, sectors,
+   pit lane, garages and grid.
+5. Package it with ModMgr into `.mas` files and an installable `.rfcmp`.
+
+The Teesside lap is 1:12.7 in a fast kart (see `docs/video_notes.md`). That's a useful target for checking the
+grip and surface settings.
 
 ## Licensing and permission
 

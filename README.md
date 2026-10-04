@@ -64,6 +64,7 @@ Useful options:
 |---|---|---|
 | `--width` | 10 | track width (m). Measure it in Google Earth with the ruler tool. |
 | `--kerb` / `--kerb-height` | 0.6 / 0.04 | kerb strip each side (0 disables) |
+| `--kerb-corners` | 40 | kerbs only through corners tighter than this radius (m), grass verge elsewhere. 0 = kerbs all the way round |
 | `--runoff` | 4 | grass/run-off each side, blended from road height down to the terrain |
 | `--terrain` | 40 | with `--dem`: LIDAR ground mesh reaching this far beyond the track (0 disables). It sits just under the road and run-off, so it never pokes through |
 | `--terrain-res` | 2 | terrain grid spacing (m). 1 matches the LIDAR but is 4× the polygons |
@@ -104,7 +105,13 @@ Stills from a POV lap are useful for placing tyre walls, kerbs, signs and buildi
 yt-dlp -f "bv*[ext=mp4][height<=720]" -o lap.mp4 "<video url>"
 python tools/extract_frames.py lap.mp4 --every 1 --start 10 --end 75   # just one clean lap
 ```
-Frames are saved to `frames/`, named by timestamp.
+Frames are saved to `frames/`, named by timestamp. To find where each frame is on the track, give the real
+lap time (e.g. from the dash) and the video time at which the kart crosses the line:
+```bash
+python tools/video_sync.py --lap-time 72.71 --lap-start 7.5
+```
+This writes `build/video_sync.csv` (video time → lap distance) and `build/video_map.png` (map labelled with
+video times). Notes from the current video are in [`docs/video_notes.md`](docs/video_notes.md).
 
 ## 4. Detail it in Blender
 

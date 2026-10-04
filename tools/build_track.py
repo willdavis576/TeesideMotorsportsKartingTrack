@@ -421,6 +421,9 @@ def main():
     ap.add_argument("--width", type=float, default=10.0, help="track width in metres (default 10)")
     ap.add_argument("--kerb", type=float, default=0.6, help="kerb width each side, 0 to disable")
     ap.add_argument("--kerb-height", type=float, default=0.04)
+    ap.add_argument("--kerb-corners", type=float, default=40.0,
+                    help="only put kerbs through corners tighter than this radius (m), with a grass verge "
+                         "elsewhere; 0 = kerbs along the whole lap")
     ap.add_argument("--runoff", type=float, default=4.0, help="grass/run-off width each side")
     ap.add_argument("--apron", type=float, default=0.0,
                     help="old-style terrain strip beyond the run-off (m); superseded by --terrain, default off")
@@ -555,11 +558,32 @@ def main():
 
     edge = half
     if args.kerb > 0:
-        zk = zc + args.kerb_height
+        if args.kerb_corners > 0:
+            # Kerbs through corners only (plus 5 m either side), as on the real track.
+            has_kerb = dilate(radius < args.kerb_corners, int(round(5 / args.step)), closed)
+        else:
+            has_kerb = np.ones(len(pts), dtype=bool)
+        # Ramp the kerb height in and out over ~2 m instead of stepping up.
+        ramp = smooth(has_kerb.astype(float), max(1, int(round(2 / args.step)) | 1), closed)
+        zk = zc + args.kerb_height * ramp
+        n = len(pts)
         for side, sgn in (("L", 1), ("R", -1)):
-            inner, outer = to_local(offset(sgn * half), zk), to_local(offset(sgn * (half + args.kerb)), zk)
-            a, b = (outer, inner) if sgn > 0 else (inner, outer)
-            mesh.strip(f"kerb{side}", "kerb", a, b, 0, 1, vdist, closed)
+            inner_all = to_local(offset(sgn * half), zk)
+            outer_all = to_local(offset(sgn * (half + args.kerb)), zk)
+            for flag, name, material in ((True, f"kerb{side}", "kerb"), (False, f"verge{side}", "grass")):
+                for run in bool_runs(has_kerb == flag, closed):
+                    if len(run) == n:  # the whole lap: one closed strip
+                        idx, run_closed = run, closed
+                    else:  # include the next sample so the run joins up with its neighbour
+                        nxt = (run[-1] + 1) % n
+                        idx = np.append(run, nxt) if (closed or run[-1] + 1 < n) else run
+                        run_closed = False
+                    if len(idx) < 2:
+                        continue
+                    vd = (run[0] + np.arange(len(idx))) * args.step / 5.0
+                    inner, outer = inner_all[idx], outer_all[idx]
+                    a, b = (outer, inner) if sgn > 0 else (inner, outer)
+                    mesh.strip(name, material, a, b, 0, 1, vd, run_closed)
         edge = half + args.kerb
 
     # Run-off blends from road height to the measured terrain.

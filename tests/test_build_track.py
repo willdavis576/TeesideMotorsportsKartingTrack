@@ -54,12 +54,21 @@ def test_build(tmp_path):
         elif line.startswith("f "):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
+    # The synthetic loop's west tip is tighter than half-width + kerb, so the road folds there and
+    # the script reports it in tight_corners. Faces may point down only near those corners.
+    import csv
+    cl = {round(float(r["dist_m"])): (float(r["x"]), float(r["z"]))
+          for r in csv.DictReader(open(out / "centreline.csv"))}
+    folds = np.array([cl[c["dist_m"]] for c in summary["tight_corners"]]).reshape(-1, 2)
     for name, fs in faces.items():
         if name.startswith("tyrewall"):
             continue  # vertical sides and n-gon caps; covered by test_tyre_walls
         f = np.array(fs)
         nrm = np.cross(v[f[:, 1]] - v[f[:, 0]], v[f[:, 2]] - v[f[:, 0]])
-        assert (nrm[:, 1] > 0).mean() > 0.98, f"{name} faces should point up (+Y)"
+        down = v[f[nrm[:, 1] <= 0]].mean(axis=1)[:, [0, 2]]
+        for p in down:
+            assert len(folds) and np.linalg.norm(folds - p, axis=1).min() < 15, \
+                f"{name} has a downward face at {p} away from any reported tight corner"
     assert {"road", "kerbL", "kerbR", "runoffL", "runoffR", "terrain"} <= set(faces)
 
     # The terrain grid must never poke through the road: every terrain vertex under the road

@@ -4,3 +4,4 @@ rasterio
 requests
 matplotlib
 pytest
+scipy

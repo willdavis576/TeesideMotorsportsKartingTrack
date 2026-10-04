@@ -58,7 +58,19 @@ def test_build(tmp_path):
         f = np.array(fs)
         nrm = np.cross(v[f[:, 1]] - v[f[:, 0]], v[f[:, 2]] - v[f[:, 0]])
         assert (nrm[:, 1] > 0).mean() > 0.98, f"{name} faces should point up (+Y)"
-    assert {"road", "kerbL", "kerbR", "runoffL", "runoffR", "apronL", "apronR"} <= set(faces)
+    assert {"road", "kerbL", "kerbR", "runoffL", "runoffR", "terrain"} <= set(faces)
+
+    # The terrain grid must never poke through the road: every terrain vertex under the road
+    # (within half-width + kerb of the centreline) sits below the road surface there.
+    import csv
+    from scipy.spatial import cKDTree
+    cl = np.array([[float(r["x"]), float(r["y_up"]), float(r["z"])]
+                   for r in csv.DictReader(open(out / "centreline.csv"))])
+    tv = v[np.unique(np.array(faces["terrain"]).ravel())]
+    dist, near = cKDTree(cl[:, [0, 2]]).query(tv[:, [0, 2]])
+    under = dist <= 4.6
+    assert under.sum() > 100
+    assert (tv[under, 1] < cl[near[under], 1]).all()
 
 
 def test_flatten_removes_mound(tmp_path):

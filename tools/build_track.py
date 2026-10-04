@@ -8,7 +8,7 @@ Inputs
                Without a DEM, KML/GPX altitudes are used if present, else flat.
 
 Outputs (in --out-dir)
-  track.obj / track.mtl  road, kerbs, run-off/grass and terrain apron (Y-up,
+  track.obj / track.mtl  road, kerbs, run-off/grass and a LIDAR terrain grid (Y-up,
                          metres, origin at the start/finish line) - import into
                          Blender or 3ds Max as the base for the rFactor 2 scene.
   centreline.csv         distance, x, y(up), z, width, heading - handy for
@@ -216,6 +216,35 @@ def fill_nan(z):
 
 # -------------------------------------------------------------------------- mesh
 
+def build_terrain(dem, pts, zc, edge, runoff, margin, res, sink=0.05):
+    """Regular DEM grid around the track that stays just under the road and run-off.
+
+    Returns (east, north, z, valid) arrays of shape (rows, cols). Under the road and kerbs the
+    ground is pushed below the road surface; across the run-off it follows the same blend from
+    road height to measured ground that the run-off strip uses, minus `sink`; beyond that it is
+    the raw DEM.
+    """
+    from scipy.spatial import cKDTree
+
+    e0, n0 = pts[:, 0].min() - margin, pts[:, 1].min() - margin
+    e1, n1 = pts[:, 0].max() + margin, pts[:, 1].max() + margin
+    east = np.arange(e0, e1 + res, res)
+    north = np.arange(n1, n0 - res, -res)  # top row = north
+    E, N = np.meshgrid(east, north)
+    Z = dem.sample(E.ravel(), N.ravel()).reshape(E.shape)
+
+    dist, nearest = cKDTree(pts[:, :2]).query(np.column_stack([E.ravel(), N.ravel()]))
+    dist, z_road = dist.reshape(E.shape), zc[nearest].reshape(E.shape)
+
+    under_road = dist <= edge
+    f = np.clip((dist - edge) / max(runoff, 1e-6), 0, 1)
+    blended = (1 - f) * z_road + f * Z - sink
+    Z = np.where(under_road, z_road - 2 * sink, np.where(dist < edge + runoff, np.fmin(Z, blended), Z))
+    # Points under the track with no DEM value can still take the road height.
+    Z = np.where(np.isnan(Z) & (dist < edge + runoff), z_road - 2 * sink, Z)
+    return E, N, Z, ~np.isnan(Z)
+
+
 class Mesh:
     def __init__(self):
         self.v, self.vt, self.groups = [], [], {}
@@ -236,6 +265,24 @@ class Mesh:
             ta, tb, tc, td = tbase + 2 * i, tbase + 2 * i + 1, tbase + 2 * j + 1, tbase + 2 * j
             # Wind counter-clockwise when viewed from above (+Y up).
             faces.append(((a, ta), (b, tb), (c, tc), (d, td)))
+        self.groups.setdefault((name, material), []).extend(faces)
+
+    def grid(self, name, material, xyz, valid, uv_scale):
+        """Triangulated height-field from an (rows, cols, 3) array; cells touching invalid points are skipped."""
+        rows, cols, _ = xyz.shape
+        base, tbase = len(self.v), len(self.vt)
+        self.v += [tuple(p) for p in xyz.reshape(-1, 3)]
+        self.vt += [(p[0] / uv_scale, -p[2] / uv_scale) for p in xyz.reshape(-1, 3)]
+        idx = np.arange(rows * cols).reshape(rows, cols)
+        faces = []
+        for r in range(rows - 1):
+            for c in range(cols - 1):
+                if not (valid[r, c] and valid[r, c + 1] and valid[r + 1, c] and valid[r + 1, c + 1]):
+                    continue
+                # Row index increases southwards, column eastwards: (r+1,c) -> (r+1,c+1) -> (r,c+1)
+                # is counter-clockwise seen from above.
+                a, b, cc, d = idx[r + 1, c], idx[r + 1, c + 1], idx[r, c + 1], idx[r, c]
+                faces.append(tuple((i + base, i + tbase) for i in (a, b, cc, d)))
         self.groups.setdefault((name, material), []).extend(faces)
 
     def write(self, obj_path, materials):
@@ -268,7 +315,11 @@ def main():
     ap.add_argument("--kerb", type=float, default=0.6, help="kerb width each side, 0 to disable")
     ap.add_argument("--kerb-height", type=float, default=0.04)
     ap.add_argument("--runoff", type=float, default=4.0, help="grass/run-off width each side")
-    ap.add_argument("--apron", type=float, default=25.0, help="terrain apron beyond run-off, 0 to disable")
+    ap.add_argument("--apron", type=float, default=0.0,
+                    help="old-style terrain strip beyond the run-off (m); superseded by --terrain, default off")
+    ap.add_argument("--terrain", type=float, default=40.0,
+                    help="with --dem: LIDAR terrain grid extending this far beyond the track (m), 0 to disable")
+    ap.add_argument("--terrain-res", type=float, default=2.0, help="terrain grid spacing (m)")
     ap.add_argument("--step", type=float, default=1.0, help="mesh spacing along the track (m)")
     ap.add_argument("--smooth-xy", type=float, default=4.0, help="plan smoothing window (m)")
     ap.add_argument("--smooth-z", type=float, default=15.0, help="road elevation smoothing window (m)")
@@ -415,6 +466,17 @@ def main():
             a, b = (far, outer) if sgn > 0 else (outer, far)
             mesh.strip(f"apron{side}", "terrain", a, b, 0, args.apron / 5, vdist, closed)
 
+    terrain_cells = 0
+    if dem and args.terrain > 0:
+        E, N, Z, valid = build_terrain(dem, pts, zc, edge, args.runoff, args.terrain, args.terrain_res)
+        xyz = np.stack([E - origin_en[0], Z - origin_z, -(N - origin_en[1])], axis=-1)
+        before = sum(len(f) for f in mesh.groups.values())
+        mesh.grid("terrain", "terrain", np.nan_to_num(xyz), valid, uv_scale=10.0)
+        terrain_cells = sum(len(f) for f in mesh.groups.values()) - before
+        if not valid.all():
+            print(f"WARNING: {1 - valid.mean():.0%} of the terrain area has no DEM data and was left out; "
+                  f"download the neighbouring LIDAR tiles or reduce --terrain.", file=sys.stderr)
+
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     mesh.write(out / "track.obj", {"road": (0.25, 0.25, 0.27), "kerb": (0.8, 0.1, 0.1),
@@ -459,6 +521,7 @@ def main():
         "origin_bng": [round(float(origin_en[0]), 2), round(float(origin_en[1]), 2)],
         "origin_alt_m": round(float(origin_z), 2),
         "vertices": len(mesh.v),
+        "terrain_cells": terrain_cells,
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2))
     print(json.dumps(summary, indent=2))

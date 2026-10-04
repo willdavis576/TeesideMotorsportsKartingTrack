@@ -65,7 +65,9 @@ Useful options:
 | `--width` | 8 | track width (m). Measure it in Google Earth with the ruler tool. |
 | `--kerb` / `--kerb-height` | 0.6 / 0.04 | kerb strip each side (0 disables) |
 | `--runoff` | 4 | grass/run-off each side, blended from road height down to the terrain |
-| `--apron` | 25 | surrounding terrain strip from the DEM. On layouts where sections run close together, neighbouring sections' aprons overlap; use `--apron 0` there |
+| `--terrain` | 40 | with `--dem`: LIDAR ground mesh reaching this far beyond the track (0 disables). It sits just under the road and run-off, so it never pokes through |
+| `--terrain-res` | 2 | terrain grid spacing (m). 1 matches the LIDAR but is 4× the polygons |
+| `--apron` | 0 | old-style terrain strip along each side. Superseded by `--terrain`; it overlaps where track sections run close together |
 | `--smooth-xy` | 4 | removes wobble from hand-traced paths |
 | `--smooth-z` | 15 | removes LIDAR noise (parked cars, etc.) from the road surface |
 | `--despike` | 11 | running-median window (m) that removes short bumps such as tyre walls or parked vehicles in the LIDAR |
@@ -74,7 +76,7 @@ Useful options:
 | `--start-offset` | 0 | move the start/finish line (and the origin) along the lap |
 
 Output in `build/`:
-- `track.obj` / `track.mtl` — separate objects for `road`, `kerbL/R`, `runoffL/R` and `apronL/R`.
+- `track.obj` / `track.mtl` — separate objects for `road`, `kerbL/R`, `runoffL/R` and `terrain` (the LIDAR ground grid).
   Units are metres, Y is up, and the origin is at the start/finish line. It imports into Blender
   with the default OBJ settings.
 - `centreline.csv` — distance, local XYZ, heading and British National Grid coordinates for every metre.

@@ -51,7 +51,7 @@ def test_build(tmp_path):
         if line.startswith("v "):
             v.append([float(c) for c in line.split()[1:]])
         elif line.startswith("o "):
-            cur = re.sub(r"_[+-]\d+_[+-]\d+$", "", line.split()[1])  # merge 100 m tiles
+            cur = re.sub(r"_[ew]\d+_[ns]\d+$", "", line.split()[1])  # merge 100 m tiles
         elif line.startswith("f "):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
@@ -134,7 +134,7 @@ def test_tight_hairpins_keep_runoff_unfolded(tmp_path):
         if line.startswith("v "):
             v.append([float(c) for c in line.split()[1:]])
         elif line.startswith("o "):
-            cur = re.sub(r"_[+-]\d+_[+-]\d+$", "", line.split()[1])  # merge 100 m tiles
+            cur = re.sub(r"_[ew]\d+_[ns]\d+$", "", line.split()[1])  # merge 100 m tiles
         elif line.startswith("f "):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
@@ -165,7 +165,7 @@ def test_tyre_walls(tmp_path):
         if line.startswith("v "):
             v.append([float(c) for c in line.split()[1:]])
         elif line.startswith("o "):
-            cur = re.sub(r"_[+-]\d+_[+-]\d+$", "", line.split()[1])  # merge 100 m tiles
+            cur = re.sub(r"_[ew]\d+_[ns]\d+$", "", line.split()[1])  # merge 100 m tiles
         elif line.startswith("f "):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
@@ -197,7 +197,7 @@ def test_tiles_keep_objects_small(tmp_path):
                     "--out-dir", str(out), "--tile", "50"], check=True)
     names = [l.split()[1] for l in (out / "track.obj").read_text().splitlines() if l.startswith("o ")]
     assert len(names) == len(set(names)), "object names must be unique"
-    assert all(re.search(r"_[+-]\d+_[+-]\d+$", n) for n in names)
+    assert all(re.fullmatch(r"[A-Za-z_]+_[ew]\d+_[ns]\d+", n) for n in names), "names must be file-name safe"
     summary = json.loads((out / "summary.json").read_text())
     assert summary["objects"] == len(names) > 20
     assert summary["max_object_vertices"] < 65535

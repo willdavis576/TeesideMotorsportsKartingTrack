@@ -87,6 +87,7 @@ Output in `build/`:
   Units are metres, Y is up, and the origin is at the start/finish line. It imports into Blender
   with the default OBJ settings.
 - `textures/` — simple starter textures (asphalt, red/white kerb, grass, terrain) matching the UV layout. Existing files are never overwritten, so you can drop real textures in with the same names.
+- `scene_instances.txt` — every object with its recommended rF2 `.scn` flags (collision, HAT, render).
 - `centreline.csv` — distance, local XYZ, heading and British National Grid coordinates for every metre.
 - `summary.json` — lap length, elevation range, max gradient, tightest corner radius.
 - `preview.png` — plan view labelled every 100 m (too-tight corners circled), and the elevation profile showing raw DEM vs. final road surface. Use the distance labels to match a bump in the profile to a spot on the track, then check it in Google Earth.
@@ -135,7 +136,7 @@ Tools:
 
 Steps:
 1. In Blender, finish the scenery and export to OBJ or FBX (keep one object per tile).
-2. In 3DSimED, import the model, assign rF2 shaders to the materials (road, kerb, grass, terrain, tyre), export the
+2. In 3DSimED (step-by-step: [`docs/rf2_export_guide.md`](docs/rf2_export_guide.md)), import the model, assign rF2 shaders to the materials (road, kerb, grass, terrain, tyre), export the
    GMTs and the `.scn`. Mark the road, kerb, verge, run-off and terrain objects as drivable/collidable, mark
    `tyrewall_collision` as collidable but not rendered, and mark the tyre stacks as visual only.
 3. Put the GMTs, textures and `.scn` in a track folder under ModDev, with `.gdb` (track info), `.tdf` (surface

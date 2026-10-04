@@ -133,6 +133,41 @@ def smooth(values, window, closed):
     return np.column_stack([np.convolve(ext[:, i], k, mode="valid") for i in range(values.shape[1])])
 
 
+def median_filter(values, window, closed):
+    """Running median - removes short spikes (tyre walls, parked vehicles) that averaging would smear."""
+    if window <= 1:
+        return values
+    pad = window // 2
+    if closed:
+        ext = np.concatenate([values[-pad:], values, values[:pad]])
+    else:
+        ext = np.concatenate([np.repeat(values[:1], pad), values, np.repeat(values[-1:], pad)])
+    return np.median(np.lib.stride_tricks.sliding_window_view(ext, window), axis=1)
+
+
+def flatten_ranges(z, ranges, step, closed):
+    """Replace elevation inside each (start, end) distance range with a straight line between its ends."""
+    z = z.copy()
+    n = len(z)
+    for start, end in ranges:
+        i0, i1 = int(round(start / step)), int(round(end / step))
+        if closed:
+            idx = np.arange(i0, i1 + 1 if i1 >= i0 else i1 + n + 1) % n
+        else:
+            idx = np.arange(max(i0, 0), min(i1, n - 1) + 1)
+        if len(idx) > 2:
+            z[idx] = np.linspace(z[idx[0]], z[idx[-1]], len(idx))
+    return z
+
+
+def parse_range(text):
+    try:
+        a, b = (float(v) for v in text.split(":"))
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"expected START:END in metres, got {text!r}")
+    return a, b
+
+
 def tangents(xy, closed):
     if closed:
         d = np.roll(xy, -1, 0) - np.roll(xy, 1, 0)
@@ -156,13 +191,16 @@ class DEM:
         x, y = self.to_dem.transform(np.asarray(e), np.asarray(n))
         col, row = ~self.ds.transform * (x, y)
         col, row = np.asarray(col) - 0.5, np.asarray(row) - 0.5
-        c0 = np.clip(np.floor(col).astype(int), 0, self.band.shape[1] - 2)
-        r0 = np.clip(np.floor(row).astype(int), 0, self.band.shape[0] - 2)
+        h, w = self.band.shape
+        c0 = np.clip(np.floor(col).astype(int), 0, w - 2)
+        r0 = np.clip(np.floor(row).astype(int), 0, h - 2)
         fc, fr = np.clip(col - c0, 0, 1), np.clip(row - r0, 0, 1)
         b = self.band.filled(np.nan)
         z = (b[r0, c0] * (1 - fc) * (1 - fr) + b[r0, c0 + 1] * fc * (1 - fr)
              + b[r0 + 1, c0] * (1 - fc) * fr + b[r0 + 1, c0 + 1] * fc * fr)
-        return z
+        # Outside the DEM: no data rather than a smeared edge value.
+        outside = (col < -0.5) | (row < -0.5) | (col > w - 0.5) | (row > h - 0.5)
+        return np.where(outside, np.nan, z)
 
 
 def fill_nan(z):
@@ -234,6 +272,10 @@ def main():
     ap.add_argument("--step", type=float, default=1.0, help="mesh spacing along the track (m)")
     ap.add_argument("--smooth-xy", type=float, default=4.0, help="plan smoothing window (m)")
     ap.add_argument("--smooth-z", type=float, default=15.0, help="road elevation smoothing window (m)")
+    ap.add_argument("--despike", type=float, default=11.0,
+                    help="running-median window (m) applied to road elevation before smoothing; 0 disables")
+    ap.add_argument("--flatten", type=parse_range, action="append", default=[], metavar="START:END",
+                    help="ignore the DEM between these lap distances (m) and ramp straight across; repeatable")
     ap.add_argument("--reverse", action="store_true", help="reverse driving direction")
     ap.add_argument("--start-offset", type=float, default=0.0,
                     help="move the start/finish (and origin) this many metres along the track")
@@ -267,8 +309,20 @@ def main():
         pts = np.roll(pts, -shift, axis=0)
 
     dem = DEM(args.dem) if args.dem else None
+    t = tangents(pts[:, :2], closed)
+    nrm = np.column_stack([-t[:, 1], t[:, 0]])  # left-hand normal in (east, north)
+
     if dem:
-        zc = fill_nan(dem.sample(pts[:, 0], pts[:, 1]))
+        # Median of several samples across the road width ignores features right at the edge.
+        across = np.linspace(-args.width / 2, args.width / 2, 5)
+        zs = np.column_stack([dem.sample(*(pts[:, :2] + nrm * d).T) for d in across])
+        with np.errstate(all="ignore"):
+            zc = np.nanmedian(zs, axis=1)
+        missing = float(np.isnan(zc).mean())
+        if missing > 0:
+            print(f"WARNING: {missing:.0%} of the lap is outside the DEM or has no data; those parts are "
+                  f"interpolated. Download the neighbouring LIDAR tiles too.", file=sys.stderr)
+        zc = fill_nan(zc)
         source = "DEM"
     elif not np.isnan(pts[:, 2]).all() and np.nanmax(pts[:, 2]) - np.nanmin(pts[:, 2]) > 0:
         zc = fill_nan(pts[:, 2])
@@ -276,14 +330,16 @@ def main():
     else:
         zc = np.zeros(len(pts))
         source = "flat (no elevation data)"
+    raw_z = zc.copy()
+    if args.despike > 0:
+        zc = median_filter(zc, max(1, int(round(args.despike / args.step)) | 1), closed)
+    zc = flatten_ranges(zc, args.flatten, args.step, closed)
     zwin = max(1, int(round(args.smooth_z / args.step)) | 1)
     zc = smooth(zc, zwin, closed)
 
     # Local frame: origin at start/finish; x = east, y = up, z = -north (OBJ / Blender-friendly).
     origin_en = pts[0, :2].copy()
     origin_z = zc[0]
-    t = tangents(pts[:, :2], closed)
-    nrm = np.column_stack([-t[:, 1], t[:, 0]])  # left-hand normal in (east, north)
 
     def to_local(en_xy, z):
         return np.column_stack([en_xy[:, 0] - origin_en[0], z - origin_z, -(en_xy[:, 1] - origin_en[1])])
@@ -345,12 +401,21 @@ def main():
     dh = np.diff(np.unwrap(np.arctan2(t[:, 1], t[:, 0])))
     radius = args.step / np.maximum(np.abs(dh), 1e-9)
     min_radius = float(radius.min())
-    if min_radius < edge + args.runoff:
-        at = int(radius.argmin()) * args.step
-        print(f"WARNING: tightest corner radius {min_radius:.1f} m at {at:.0f} m is smaller than the "
-              f"track half-width + kerb + run-off ({edge + args.runoff:.1f} m); the inside edge will fold "
-              f"over itself there. Increase --smooth-xy, reduce --runoff, or fix it by hand in Blender.",
-              file=sys.stderr)
+    limit = edge + args.runoff
+    tight = []  # (distance, radius) of the tightest point in each run of too-tight samples
+    run = []
+    for i in list(range(len(radius))) + [None]:
+        if i is not None and radius[i] < limit:
+            run.append(i)
+        elif run:
+            k = min(run, key=lambda j: radius[j])
+            tight.append((round(k * args.step), round(float(radius[k]), 1)))
+            run = []
+    if tight:
+        where = ", ".join(f"{d} m (r={r} m)" for d, r in tight)
+        print(f"WARNING: corners tighter than half-width + kerb + run-off ({limit:.1f} m), where the inside "
+              f"edge will fold over itself: {where}. Re-trace those corners with more points, increase "
+              f"--smooth-xy, or reduce --runoff.", file=sys.stderr)
     summary = {
         "length_m": round(float(len(pts) * args.step if closed else length), 1),
         "closed_loop": bool(closed),
@@ -358,6 +423,8 @@ def main():
         "elevation_range_m": round(float(zc.max() - zc.min()), 2),
         "max_grade_pct": round(float(np.abs(grade).max()) if len(grade) else 0.0, 2),
         "min_corner_radius_m": round(min_radius, 1),
+        "tight_corners": [{"dist_m": d, "radius_m": r} for d, r in tight],
+        "flattened": [list(r) for r in args.flatten],
         "origin_bng": [round(float(origin_en[0]), 2), round(float(origin_en[1]), 2)],
         "origin_alt_m": round(float(origin_z), 2),
         "vertices": len(mesh.v),
@@ -374,12 +441,28 @@ def main():
             o = to_local(offset(d), zc)
             ax1.plot(o[:, 0], -o[:, 2], "k-", lw=0.8)
         ax1.plot(local[:, 0], -local[:, 2], "r--", lw=0.6)
+        for i in range(0, len(local), int(round(100 / args.step))):
+            ax1.plot(local[i, 0], -local[i, 2], "k.", ms=3)
+            ax1.annotate(f"{i * args.step:.0f}", (local[i, 0], -local[i, 2]), fontsize=7,
+                         xytext=(nrm[i, 0] * 14, nrm[i, 1] * 14), textcoords="offset points",
+                         ha="center", va="center", color="0.3")
+        if tight:
+            ti = [int(d / args.step) for d, _ in tight]
+            ax1.plot(local[ti, 0], -local[ti, 2], "o", mfc="none", mec="m", ms=10, label="too-tight corner")
         ax1.plot(0, 0, "go", label="start/finish (origin)")
         ax1.annotate("", xy=(local[3, 0], -local[3, 2]), xytext=(0, 0), arrowprops={"arrowstyle": "->"})
         ax1.set_aspect("equal")
         ax1.set_title("Plan (m, north up)")
         ax1.legend(loc="best", fontsize=8)
-        ax2.plot(np.arange(len(zc)) * args.step, zc)
+        dist = np.arange(len(zc)) * args.step
+        ax2.plot(dist, raw_z, color="0.55", lw=0.8, label="raw DEM / input")
+        ax2.plot(dist, zc, label="road surface")
+        for a, b in args.flatten:
+            spans = [(a, b)] if b >= a else [(a, dist[-1]), (0, b)]  # wrapped range on a loop
+            for i, (x0, x1) in enumerate(spans):
+                ax2.axvspan(x0, x1, color="orange", alpha=0.25, label="--flatten" if i == 0 else None)
+        ax2.legend(loc="best", fontsize=8)
+        ax2.grid(alpha=0.3)
         ax2.set_title(f"Elevation profile ({source})")
         ax2.set_xlabel("distance (m)")
         ax2.set_ylabel("height (m)")

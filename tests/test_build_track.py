@@ -59,3 +59,25 @@ def test_build(tmp_path):
         nrm = np.cross(v[f[:, 1]] - v[f[:, 0]], v[f[:, 2]] - v[f[:, 0]])
         assert (nrm[:, 1] > 0).mean() > 0.98, f"{name} faces should point up (+Y)"
     assert {"road", "kerbL", "kerbR", "runoffL", "runoffR", "apronL", "apronR"} <= set(faces)
+
+
+def test_flatten_removes_mound(tmp_path):
+    import rasterio
+    from rasterio.transform import from_origin
+    kml, dem, out = tmp_path / "t.kml", tmp_path / "dem.tif", tmp_path / "build"
+    make_kml(kml)
+    z = np.full((400, 600), 10.0, dtype="float32")
+    z[160:200, 390:440] = 14.0  # 4 m mound across the track near its east end
+    with rasterio.open(dem, "w", driver="GTiff", width=600, height=400, count=1, dtype="float32",
+                       crs="EPSG:27700", transform=from_origin(451700, 520700, 1, 1)) as ds:
+        ds.write(z, 1)
+
+    def run(*extra):
+        subprocess.run([sys.executable, str(ROOT / "tools/build_track.py"), str(kml), "--dem", str(dem),
+                        "--out-dir", str(out), *extra], check=True)
+        return json.loads((out / "summary.json").read_text())
+
+    assert run()["elevation_range_m"] > 1.0
+    flat = run("--flatten", "570:60")  # mound straddles the start line, so the range wraps
+    assert flat["elevation_range_m"] < 0.05
+    assert flat["flattened"] == [[570.0, 60.0]]

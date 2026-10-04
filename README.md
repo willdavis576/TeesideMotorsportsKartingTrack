@@ -68,6 +68,8 @@ Useful options:
 | `--apron` | 25 | surrounding terrain strip from the DEM |
 | `--smooth-xy` | 4 | removes wobble from hand-traced paths |
 | `--smooth-z` | 15 | removes LIDAR noise (parked cars, etc.) from the road surface |
+| `--despike` | 11 | running-median window (m) that removes short bumps such as tyre walls or parked vehicles in the LIDAR |
+| `--flatten START:END` | – | ignore the DEM between two lap distances and ramp straight across. Can be repeated, and can wrap past the start line (e.g. `1580:40`) |
 | `--reverse` | off | flip the driving direction |
 | `--start-offset` | 0 | move the start/finish line (and the origin) along the lap |
 
@@ -77,7 +79,7 @@ Output in `build/`:
   with the default OBJ settings.
 - `centreline.csv` — distance, local XYZ, heading and British National Grid coordinates for every metre.
 - `summary.json` — lap length, elevation range, max gradient, tightest corner radius.
-- `preview.png` — plan view and elevation profile.
+- `preview.png` — plan view labelled every 100 m (too-tight corners circled), and the elevation profile showing raw DEM vs. final road surface. Use the distance labels to match a bump in the profile to a spot on the track, then check it in Google Earth.
 
 Check `summary.json` against the real circuit's published lap length. If you get a warning about a corner
 radius, a hairpin is tighter than half the track width. Fix it with more `--smooth-xy`, a smaller `--runoff`,

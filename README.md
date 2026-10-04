@@ -96,6 +96,16 @@ track width: re-trace that corner with more, evenly spaced points or increase `-
 
 Run the tests with `python -m pytest tests`.
 
+## Onboard video (optional)
+
+Stills from a POV lap are useful for placing tyre walls, kerbs, signs and buildings. Download the video
+(e.g. with `yt-dlp`), then save a frame every second. No ffmpeg is needed:
+```bash
+yt-dlp -f "bv*[ext=mp4][height<=720]" -o lap.mp4 "<video url>"
+python tools/extract_frames.py lap.mp4 --every 1 --start 10 --end 75   # just one clean lap
+```
+Frames are saved to `frames/`, named by timestamp.
+
 ## 4. Detail it in Blender
 
 The generated mesh is the base. The rest is normal track modelling:

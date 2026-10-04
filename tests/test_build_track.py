@@ -62,8 +62,8 @@ def test_build(tmp_path):
           for r in csv.DictReader(open(out / "centreline.csv"))}
     folds = np.array([cl[c["dist_m"]] for c in summary["tight_corners"]]).reshape(-1, 2)
     for name, fs in faces.items():
-        if name.startswith("tyrewall"):
-            continue  # vertical sides and n-gon caps; covered by test_tyre_walls
+        if name.startswith("tyrewall") or name.startswith("x"):
+            continue  # vertical tyre stacks and timing gates; covered by their own tests
         f = np.array(fs)
         nrm = np.cross(v[f[:, 1]] - v[f[:, 0]], v[f[:, 2]] - v[f[:, 0]])
         down = v[f[nrm[:, 1] <= 0]].mean(axis=1)[:, [0, 2]]
@@ -139,8 +139,8 @@ def test_tight_hairpins_keep_runoff_unfolded(tmp_path):
             faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
     v = np.array(v)
     for name, fs in faces.items():
-        if name.startswith("tyrewall"):
-            continue  # vertical sides and n-gon caps; covered by test_tyre_walls
+        if name.startswith("tyrewall") or name.startswith("x"):
+            continue  # vertical tyre stacks and timing gates; covered by their own tests
         f = np.array(fs)
         # Both triangles of each quad must face up, otherwise the strip has folded over itself.
         for tri in ((0, 1, 2), (0, 2, 3)):
@@ -197,7 +197,50 @@ def test_tiles_keep_objects_small(tmp_path):
                     "--out-dir", str(out), "--tile", "50"], check=True)
     names = [l.split()[1] for l in (out / "track.obj").read_text().splitlines() if l.startswith("o ")]
     assert len(names) == len(set(names)), "object names must be unique"
-    assert all(re.fullmatch(r"[A-Za-z_]+_[ew]\d+_[ns]\d+", n) for n in names), "names must be file-name safe"
+    gates = {"xfinish", "xsector1", "xsector2", "xpitin", "xpitout"}
+    assert gates <= set(names), "timing/pit gates are whole objects, never tiled"
+    assert all(re.fullmatch(r"[A-Za-z_]+_[ew]\d+_[ns]\d+", n) for n in set(names) - gates), \
+        "names must be file-name safe"
     summary = json.loads((out / "summary.json").read_text())
     assert summary["objects"] == len(names) > 20
     assert summary["max_object_vertices"] < 65535
+
+
+def test_timing_and_pit_gates(tmp_path):
+    kml, dem, out = tmp_path / "t.kml", tmp_path / "dem.tif", tmp_path / "build"
+    make_kml(kml)
+    make_dem(dem)
+    subprocess.run([sys.executable, str(ROOT / "tools/build_track.py"), str(kml), "--dem", str(dem),
+                    "--out-dir", str(out)], check=True)
+    summary = json.loads((out / "summary.json").read_text())
+    lap = summary["length_m"]
+    g = summary["gates"]
+    assert g["xfinish"]["dist_m"] == 0
+    assert abs(g["xsector1"]["dist_m"] - lap / 3) < 2 and abs(g["xsector2"]["dist_m"] - 2 * lap / 3) < 2
+
+    import csv
+    from scipy.spatial import cKDTree
+    v, faces, cur = [], {}, None
+    for line in (out / "track.obj").read_text().splitlines():
+        if line.startswith("v "):
+            v.append([float(c) for c in line.split()[1:]])
+        elif line.startswith("o "):
+            cur = line.split()[1]
+        elif line.startswith("f "):
+            faces.setdefault(cur, []).append([int(p.split("/")[0]) - 1 for p in line.split()[1:]])
+    v = np.array(v)
+    cl = np.array([[float(r["x"]), float(r["z"])] for r in csv.DictReader(open(out / "centreline.csv"))])
+    tree = cKDTree(cl)
+    for name in ("xfinish", "xsector1", "xsector2", "xpitin", "xpitout"):
+        f = np.array(faces[name])
+        assert len(f) == 2  # one quad each way, so the gate triggers from either side
+        p = v[f[0]]
+        nrm = np.cross(p[1] - p[0], p[3] - p[0])
+        assert abs(nrm[1]) < 1e-6 * np.linalg.norm(nrm)  # vertical
+        assert p[:, 1].max() - p[:, 1].min() > 20  # tall enough that nothing passes over/under
+    # The finish gate spans the track; the default pit gates sit off to the side and are never crossed.
+    fin = v[np.array(faces["xfinish"][0])]
+    assert np.linalg.norm(fin[0, [0, 2]] - fin[1, [0, 2]]) > 2 * (5 + 0.6 + 4)
+    for name in ("xpitin", "xpitout"):
+        pit = v[np.array(faces[name][0])][:, [0, 2]]
+        assert tree.query(pit)[0].min() > 5 + 0.6 + 4

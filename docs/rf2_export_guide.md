@@ -23,7 +23,9 @@ where this guide names a menu, check it against the version you have.
 3. **File → Export → FBX (.fbx)**:
    - *Limit to*: everything you want in the track (or *Selected Objects*)
    - *Object Types*: **Mesh** only (leave out the camera and light)
-   - *Scale*: **1.00**, *Apply Scalings*: **FBX Units Scale**
+   - *Scale*: **0.01**, *Apply Scalings*: **FBX Units Scale**. Blender's FBX files are in centimetres and
+     3DSimED reads the numbers as metres, so with Scale 1.00 the track comes out **100× too big**. That
+     happened on the first Teesside export; `tools/check_gmt.py` catches it (see section C).
    - *Forward*: **-Z Forward**, *Up*: **Y Up** (Blender's defaults; rF2 is Y-up)
    - *Geometry*: tick **Triangulate Faces** (the tyre-stack tops are 12-sided polygons), **Apply Modifiers**
    - *Path Mode*: **Copy**, with the embed button off, so the textures are copied next to the FBX
@@ -45,7 +47,9 @@ where this guide names a menu, check it against the version you have.
    | Objects | Collide | HAT | Render | Why |
    |---|---|---|---|---|
    | `road_*`, `kerbL/R_*`, `vergeL/R_*`, `runoffL/R_*`, `terrain_*` | ✔ | ✔ | ✔ | Drivable: karts touch it and rest on it |
-   | `tyrewall_collision_*` | ✔ | ✘ | ✘ | Invisible wall the karts bump into |
+   | `tyrewall_collision_*` | ✔ | ✘ | ✘ | Invisible wall the karts bump into (material `twal_collision`, so it has tyre-wall physics) |
+   | `xfinish`, `xsector1`, `xsector2` | ✔ | ✘ | ✘ | Invisible timing gates (Response=VEHICLE,TIMING) |
+   | `xpitin`, `xpitout` | ✔ | ✘ | ✘ | Invisible pit entry/exit gates (Response=VEHICLE,PITSTOP). By default they sit off the track in the paddock until a pit lane exists |
    | `tyrewall_*` | ✘ | ✘ | ✔ | Visual only. 2,000+ cylinders would be expensive and lumpy to collide with |
    | Buildings and other scenery | ✘ | ✘ | ✔ | Unless karts can hit them |
 
@@ -61,7 +65,7 @@ where this guide names a menu, check it against the version you have.
    Add `--dry-run` to see what it would change first.
 7. **Compare the `.scn`** with `scene_instances.txt`. Each drivable instance should look like
    ```
-   Instance=road_e0_s1 { MeshFile=road_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN }
+   Instance=road_e0_s1 { MeshFile=road_e0_s1.gmt Deformable=True CollTarget=True HATTarget=True }
    ```
    You can paste lines across if 3DSimED left a flag out.
 
@@ -104,6 +108,14 @@ Studio 397's PBR guide and the "Roads Materials (Asphalt / Concrete)" page give 
 real asphalt colour from the video stills as a reference.
 
 ## C. Check before moving on
+
+- **Check the size and textures** of the export:
+  ```bash
+  python tools/check_gmt.py GMT
+  ```
+  It reads the bounding box stored at the start of every GMT and compares it with `build/track.obj`. It should
+  say `OK: sizes match (metres)` and `Axis mapping: GMT = (+x, +y, -z)`. The z flip is normal: rF2's z axis points
+  north, our OBJ's points south. It also lists every texture the GMTs need.
 
 - Open the `.scn` in **gJED** or 3DSimED and confirm all 142 pieces load with textures.
 - Look closely at the road surface for gaps or steps between tiles. There shouldn't be any, because the tiles

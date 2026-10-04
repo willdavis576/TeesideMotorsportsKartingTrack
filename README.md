@@ -84,6 +84,8 @@ Output in `build/`:
   `tyrewall` (stacks of three tyres on the outside of corners) and `tyrewall_collision` (a simple 1 m wall along the
   track-facing side of the tyres). In rF2 the collision wall should be invisible but collidable, so the karts hit a
   clean surface instead of 12-sided cylinders. Tyres are left out wherever another part of the track runs close by.
+  Also five invisible gates rF2 requires: `xfinish` (start/finish line), `xsector1`/`xsector2` (sector lines,
+  default thirds of the lap, `--sectors`) and `xpitin`/`xpitout` (pit entry/exit, `--pits`). These are never split into tiles.
   Units are metres, Y is up, and the origin is at the start/finish line. It imports into Blender
   with the default OBJ settings.
 - `textures/` — simple starter textures (asphalt, red/white kerb, grass, terrain) matching the UV layout. Existing files are never overwritten, so you can drop real textures in with the same names.

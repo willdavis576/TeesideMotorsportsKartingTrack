@@ -17,6 +17,9 @@ Instance=kerbL_w2_n0 { MeshFile=kerbL_w2_n0.gmt }
 Instance=tyrewall_e1_n0 { MeshFile=tyrewall_e1_n0.gmt CollTarget=True HATTarget=True }
 Instance=tyrewall_collision_e1_n0 { MeshFile=tyrewall_collision_e1_n0.gmt CollTarget=True }
 Instance=grandstand { MeshFile=grandstand.gmt CollTarget=True }
+Instance=runoffL_e0_n0 { MeshFile=runoffl_e0_n0.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN }
+Instance=xfinish { MeshFile=xfinish.gmt CollTarget=False HATTarget=False }
+Instance=xpitin { MeshFile=xpitin.gmt CollTarget=False HATTarget=False }
 """
 
 
@@ -28,7 +31,8 @@ def block(text, name):
 def test_flags_per_object_type():
     new, changes = patch(SCN)
     road = block(new, "road_e0_s1")
-    assert "CollTarget=True" in road and "HATTarget=True" in road and "Response=VEHICLE,TERRAIN" in road
+    assert "CollTarget=True" in road and "HATTarget=True" in road and "Deformable=True" in road
+    assert "Response" not in road  # the ModDev sample track's surfaces don't use one
     assert "ShadowReceiver=True" in road and "MeshFile=road_e0_s1.gmt" in road  # untouched settings kept
     kerb = block(new, "kerbL_w2_n0")
     assert "CollTarget=True" in kerb and "HATTarget=True" in kerb
@@ -37,7 +41,12 @@ def test_flags_per_object_type():
     wall = block(new, "tyrewall_collision_e1_n0")
     assert "Render=False" in wall and "CollTarget=True" in wall and "HATTarget=False" in wall
     assert block(new, "grandstand") == block(SCN, "grandstand")  # unknown scenery untouched
-    assert changes == {"drivable": 2, "tyrewall": 1, "tyrewall_collision": 1}
+    runoff = block(new, "runoffL_e0_n0")
+    assert "Response" not in runoff and "CollTarget=True HATTarget=True" in runoff  # old flag removed
+    fin = block(new, "xfinish")
+    assert "Render=False" in fin and "CollTarget=True" in fin and "Response=VEHICLE,TIMING" in fin
+    assert "Response=VEHICLE,PITSTOP" in block(new, "xpitin")
+    assert changes == {"road": 1, "drivable": 2, "tyrewall": 1, "tyrewall_collision": 1, "timing": 1, "pits": 1}
     assert new.startswith("// exported scene")
 
 

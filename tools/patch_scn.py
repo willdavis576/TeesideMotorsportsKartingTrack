@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Set the collision / HAT / render flags in an rFactor 2 .scn file exported by 3DSimED.
 
-Each `Instance=<name> { ... }` block gets the flags for its object type (road, kerb,
-verge, run-off and terrain are drivable; the tyre stacks are visual only; the tyre
-collision wall is invisible but solid). Other settings in each block are kept as they are.
+Each `Instance=<name> { ... }` block gets the flags for its object type, copied from the
+ModDev sample track: road, kerb, verge, run-off and terrain are drivable; the tyre stacks are
+visual only; the tyre collision wall is invisible but solid; xfinish/xsector1/xsector2 and
+xpitin/xpitout are invisible timing and pit gates. Other settings in each block are kept.
 Instances with names this script doesn't recognise (your own scenery) are left alone.
 
     python tools/patch_scn.py path/to/teesside.scn            # writes teesside.scn, keeps teesside.scn.bak
@@ -15,26 +16,48 @@ import shutil
 import sys
 from pathlib import Path
 
-DRIVABLE = ("road", "kerbL", "kerbR", "vergeL", "vergeR", "runoffL", "runoffR", "apronL", "apronR", "terrain")
+DRIVABLE = ("kerbL", "kerbR", "vergeL", "vergeR", "runoffL", "runoffR", "apronL", "apronR", "terrain")
+TIMING = ("xfinish", "xsector1", "xsector2")
+PITS = ("xpitin", "xpitout")
+
+# Flags copied from the ModDev sample track (Joesville): its race surface is
+# "Deformable=True CollTarget=True HATTarget=True", other drivable ground "CollTarget=True HATTarget=True",
+# walls "CollTarget=True HATTarget=False", and the timing/pit gates are invisible with a TIMING or
+# PITSTOP response.
 FLAGS = {
-    "drivable": {"CollTarget": "True", "HATTarget": "True", "Response": "VEHICLE,TERRAIN"},
+    "road": {"Deformable": "True", "CollTarget": "True", "HATTarget": "True"},
+    "drivable": {"CollTarget": "True", "HATTarget": "True"},
     "tyrewall": {"CollTarget": "False", "HATTarget": "False"},
     "tyrewall_collision": {"Render": "False", "CollTarget": "True", "HATTarget": "False"},
+    "timing": {"Render": "False", "CollTarget": "True", "HATTarget": "False", "Response": "VEHICLE,TIMING"},
+    "pits": {"Render": "False", "CollTarget": "True", "HATTarget": "False", "Response": "VEHICLE,PITSTOP"},
 }
+# Keys to take out (an earlier version of this script added Response=VEHICLE,TERRAIN, which the sample
+# track doesn't use on its surfaces).
+REMOVE = {"road": ("Response",), "drivable": ("Response",)}
 TILE = re.compile(r"_[ew]\d+_[ns]\d+$")
 
 
 def kind(name):
     base = TILE.sub("", name)
+    if base == "road":
+        return "road"
     if base in DRIVABLE:
         return "drivable"
+    if base in TIMING:
+        return "timing"
+    if base in PITS:
+        return "pits"
     return base if base in FLAGS else None
 
 
-def patch_block(body, flags):
-    """Set key=value pairs inside one instance block, replacing existing ones or adding them."""
+def patch_block(body, flags, remove=()):
+    """Set key=value pairs inside one instance block, replacing existing ones or adding them,
+    and delete the keys in `remove`."""
     trailing = body[len(body.rstrip()):]  # keep the block's original line break / spacing before "}"
     body = body.rstrip()
+    for key in remove:
+        body = re.sub(rf"[ \t]*(?<![A-Za-z]){key}\s*=\s*[^\s}}]+", "", body)
     for key, value in flags.items():
         pattern = re.compile(rf"(?<![A-Za-z]){key}\s*=\s*[^\s}}]+")
         if pattern.search(body):
@@ -59,7 +82,7 @@ def patch(text):
         k = kind(name)
         out.append(text[pos:m.end()])
         if k:
-            new = patch_block(body, FLAGS[k])
+            new = patch_block(body, FLAGS[k], REMOVE.get(k, ()))
             if new != body:
                 changes[k] = changes.get(k, 0) + 1
             body = new

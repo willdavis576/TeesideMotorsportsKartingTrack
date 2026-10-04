@@ -1,0 +1,716 @@
+CUBEASF
+
+//-------------------------------------------------------
+
+SearchPath=.
+SearchPath=JOESVILLE
+SearchPath=JOESVILLE\JOESVILLE_SPEEDWAY
+SearchPath=JOESVILLE\ASSETS\ANIMS
+SearchPath=JOESVILLE\ASSETS\GMT
+SearchPath=JOESVILLE\ASSETS\MAPS
+SearchPath=JOESVILLE\ASSETS\SPONSORMAPS
+
+//-------------------------------------------------------
+
+MASFile=COMMONMAPS.MAS
+
+//-------------------------------------------------------
+
+View=mainview
+{
+  Clear=False
+  Color=(0, 0, 0)
+  Size=(1.00, 1.00) Center=(0.5, 0.5)
+  FOV=(77.75, 31.25)
+  ClipPlanes=(0.50, 1000.00)
+  View=rearview
+  {
+    Clear=False
+    Color=(0, 0, 0)
+    Size=(0.200, 0.100) Center=(0.50, 0.01)
+    FOV=(62.5, 62.5)
+    ClipPlanes=(0.50, 150.00)    
+  }
+}
+
+//-------------------------------------------------------
+
+GroupMethod=Dynamic
+MaxShadowRange=(450.00)
+AmbientColor=(126, 126, 126)
+ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+
+FogMode=LINEAR FogIn=(50.00) FogOut=(5000.00) FogDensity=(0.00015) FogColor=(205, 215, 235)
+
+//-------------------------------------------------------
+//---------------------LIGHTING--------------------------
+//-------------------------------------------------------
+
+Light=Direct00
+{
+ Type=Directional Color=(220, 220, 220) Dir=(0.5, -0.9, 0.5)
+}
+Light=NightLight00
+{
+ Type=Omni Pos=(32.016705, 8.781423, -12.574434) Range=(0.000000, 37.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight01
+{
+ Type=Omni Pos=(0.455906, 8.781423, -12.216267) Range=(0.000000, 36.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight02
+{
+ Type=Omni Pos=(-31.395870, 8.781423, -12.574434) Range=(0.000000, 40.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight03
+{
+ Type=Omni Pos=(-60.773445, 8.781423, -9.663166) Range=(0.000000, 23.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight04
+{
+ Type=Omni Pos=(-90.504089, 8.781423, -15.849140) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight05
+{
+ Type=Omni Pos=(-113.631363, 8.781423, -34.660614) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight06
+{
+ Type=Omni Pos=(-120.015518, 8.781423, -66.661407) Range=(0.000000, 31.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight07
+{
+ Type=Omni Pos=(-114.350800, 8.781423, -98.482903) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight08
+{
+ Type=Omni Pos=(-88.764648, 8.781423, -117.628448) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight09
+{
+ Type=Omni Pos=(-59.417664, 8.781423, -125.848503) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight10
+{
+ Type=Omni Pos=(-28.033106, 8.781423, -125.848503) Range=(0.000000, 28.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight11
+{
+ Type=Omni Pos=(29.412321, 8.781423, -127.465401) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight12
+{
+ Type=Omni Pos=(61.242725, 8.781423, -127.573532) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight13
+{
+ Type=Omni Pos=(92.864639, 8.781423, -120.286148) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight14
+{
+ Type=Omni Pos=(114.754738, 8.781423, -95.872879) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight15
+{
+ Type=Omni Pos=(120.065109, 8.781423, -66.891953) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight16
+{
+ Type=Omni Pos=(115.836494, 8.781423, -33.183693) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight17
+{
+ Type=Omni Pos=(91.075119, 8.781423, -16.200171) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight18
+{
+ Type=Omni Pos=(61.701958, 8.781423, -6.435249) Range=(0.000000, 33.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight19
+{
+ Type=Omni Pos=(57.479355, 13.475136, -168.888474) Range=(0.000000, 20.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight20
+{
+ Type=Omni Pos=(-170.041580, 13.475136, -92.478226) Range=(0.000000, 25.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight21
+{
+ Type=Omni Pos=(-148.030319, 13.475136, -15.464203) Range=(0.000000, 21.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight22
+{
+ Type=Omni Pos=(-111.710854, 13.475136, 19.609051) Range=(0.000000, 19.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight23
+{
+ Type=Omni Pos=(80.492699, 13.475136, 34.958138) Range=(0.000000, 29.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+Light=NightLight24
+{
+ Type=Omni Pos=(-45.017036, 13.475136, -165.700134) Range=(0.000000, 14.000000) Active=True Intensity=(1.500000) Color=(255, 255, 224)
+}
+
+Instance=NightLight01Glow
+{
+  VisGroups=(32) ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=NightLight01Glow.gmt CollTarget=False HATTarget=False 
+}
+
+//-------------------------------------------------------
+//----------------------TERRAIN--------------------------
+//-------------------------------------------------------
+
+Instance=RaceSurface_01
+{
+  MeshFile=RaceSurface_01.gmt Deformable=True CollTarget=True HATTarget=True 
+}
+
+Instance=Infield
+{
+  MeshFile=Infield.gmt CollTarget=True HATTarget=True 
+}
+Instance=Outfield
+{
+  MeshFile=Outfield.gmt CollTarget=False HATTarget=False 
+}
+
+Instance=RoadLines
+{
+  VisGroups=(32) 
+  MeshFile=RoadLines.gmt CollTarget=True HATTarget=True 
+}
+Instance=Grassverges
+{
+  VisGroups=(32) 
+  MeshFile=Grassverges.gmt CollTarget=False HATTarget=False 
+}
+
+//-------------------------------------------------------
+//---------------------BARRIERS--------------------------
+//-------------------------------------------------------
+
+Instance=Walls_Inside
+{
+  ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=Walls_Inside.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(15) 
+}
+Instance=Walls_Outside
+{
+  ReflectPlane=(0.000, 1.000, 0.000, -1.685) 
+  MeshFile=Walls_Outside.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(15) 
+}
+Instance=Armcos
+{
+  ReflectPlane=(0.000, 1.000, 0.000, -1.685) 
+  MeshFile=Armcos.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(15) 
+}
+Instance=BarrierA_01
+{
+  VisGroups=(32) 
+  MeshFile=BarrierA_01.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=SafetyFences
+{
+  ReflectPlane=(0.000, 1.000, 0.000, -1.685) 
+  MeshFile=SafetyFences.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Texture) Reflect=True ShadowGroups=(14) 
+}
+Instance=SFencePosts
+{
+  ReflectPlane=(0.000, 1.000, 0.000, -1.685) 
+  MeshFile=SFencePosts.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=Fence_ChainLink
+{
+  MeshFile=Fence_ChainLink.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Texture) ShadowGroups=(12) 
+}
+
+//-------------------------------------------------------
+//------------------------TSO----------------------------
+//-------------------------------------------------------
+
+Instance=Container_01
+{
+  VisGroups=(32) 
+  MeshFile=Container_01.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(14) 
+}
+Instance=Structures
+{
+  VisGroups=(38) 
+  MeshFile=Structures.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Struct_OilWaste
+{
+  VisGroups=(32) 
+  MeshFile=Struct_OilWaste.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(14) 
+}
+Instance=Fence_OilWaste
+{
+  VisGroups=(36) 
+  MeshFile=Fence_OilWaste.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Texture) ShadowGroups=(12) 
+}
+Instance=KartReg
+{
+  VisGroups=(32) 
+  MeshFile=KartReg.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=LightPosts
+{
+  VisGroups=(38) ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=LightPosts.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=wires
+{
+  VisGroups=(38) 
+  MeshFile=wires.gmt CollTarget=False HATTarget=False 
+}
+Instance=StartLight
+{
+  VisGroups=(32) ReflectPlane=(0.000, 1.000, 0.000, -1.685) 
+  MeshFile=SFTower.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(14) 
+}
+Instance=Billboards
+{
+  VisGroups=(38) ReflectPlane=(0.000, 1.000, 0.000, -1.685) 
+  MeshFile=Billboards.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(14) 
+}
+Instance=FuelSign_01
+{
+  VisGroups=(103) ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=FuelSign_01.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=OutHouses_01
+{
+  MeshFile=OutHouses_01.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Speakers
+{
+  VisGroups=(38) 
+  MeshFile=Speakers.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(8) 
+}
+Instance=Flagpoles
+{
+  VisGroups=(36) 
+  MeshFile=Flagpoles.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(8) 
+}
+Instance=Flag_01
+{
+  VisGroups=(36) 
+  MeshFile=Flag_01.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(8) 
+  AnimFile=FlagAnim.ANM AutoStart=(1)
+}
+Instance=Flag_02
+{
+  VisGroups=(36) 
+  MeshFile=Flag_02.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(8) 
+  AnimFile=FlagAnim.ANM AutoStart=(42)
+}
+Instance=Flag_03
+{
+  VisGroups=(36) 
+  MeshFile=Flag_03.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(8) 
+  AnimFile=FlagAnim.ANM AutoStart=(91)
+}
+
+//-------------------------------------------------------
+//---------------------VEGETATION------------------------
+//-------------------------------------------------------
+
+Instance=Trees3D_01
+{
+  VisGroups=(32) 
+  MeshFile=Trees3D_01.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Texture) ShadowGroups=(12) 
+}
+Instance=Trees3D_02
+{
+  VisGroups=(32) 
+  MeshFile=Trees3D_02.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Texture) ShadowGroups=(12) 
+}
+
+Instance=Trees2D_01
+{
+  VisGroups=(32) 
+  MeshFile=Trees2D_01.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Texture) ShadowGroups=(12) 
+}
+Instance=Shrubs_01
+{
+  VisGroups=(32) 
+  MeshFile=Shrubs_01.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Texture) ShadowGroups=(12) 
+}
+
+Instance=Flowers_01
+{
+  VisGroups=(38) 
+  MeshFile=Flowers_01.gmt CollTarget=False HATTarget=False 
+}
+
+Instance=Treeline
+{
+  MeshFile=Treeline.gmt CollTarget=False HATTarget=False 
+}
+
+//-------------------------------------------------------
+//---------------------GRANDSTAND------------------------
+//-------------------------------------------------------
+
+Instance=GrandstandC_01
+{
+  VisGroups=(32) 
+  MeshFile=GrandstandC_01.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Texture) ShadowGroups=(12) 
+}
+Instance=Grandstand_01
+{
+  VisGroups=(32) 
+  MeshFile=Grandstand_01.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=ComBox
+{
+  VisGroups=(32) 
+  MeshFile=ComBox.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+
+Instance=CrowdP
+{
+  VisGroups=(36) 
+  MeshFile=CrowdP.gmt CollTarget=False HATTarget=False 
+}
+Instance=CrowdQ
+{
+  VisGroups=(102) 
+  MeshFile=CrowdQ.gmt CollTarget=False HATTarget=False 
+}
+Instance=CrowdR
+{
+  VisGroups=(231) 
+  MeshFile=CrowdR.gmt CollTarget=False HATTarget=False 
+}
+
+//-------------------------------------------------------
+//----------------------VEHICLES-------------------------
+//-------------------------------------------------------
+
+Instance=Veh_Trailers_01
+{
+  VisGroups=(32) 
+  MeshFile=Veh_Trailers_01.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Veh_Cars_01
+{
+  VisGroups=(36) 
+  MeshFile=Veh_Cars_01.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(8) 
+}
+
+//-------------------------------------------------------
+//------------------MOVABLE OBJECTS----------------------
+//-------------------------------------------------------
+
+Instance=Cone_01
+{
+  Moveable=True ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=Cone_01.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=Cone_02
+{
+  Moveable=True ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=Cone_02.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=Cone_03
+{
+  Moveable=True ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=Cone_03.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=Cone_04
+{
+  Moveable=True ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=Cone_04.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=Cone_05
+{
+  Moveable=True ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=Cone_05.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=Cone_06
+{
+  Moveable=True ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=Cone_06.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=Cone_07
+{
+  Moveable=True ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=Cone_07.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+Instance=Cone_08
+{
+  Moveable=True ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=Cone_08.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) Reflect=True ShadowGroups=(12) 
+}
+
+Instance=Post_BinGIB_01
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinGIB_01.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinGIB_02
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinGIB_02.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinGIB_03
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinGIB_03.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_01
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_01.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_02
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_02.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_03
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_03.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_04
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_04.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_05
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_05.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_06
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_06.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_07
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_07.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_08
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_08.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_09
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_09.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_10
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_10.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_11
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_11.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_12
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_12.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinBlue_13
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinBlue_13.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinA_01
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinA_01.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinA_02
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinA_02.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinA_03
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinA_03.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinA_04
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinA_04.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinA_05
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinA_05.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinA_06
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinA_06.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinA_07
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinA_07.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+Instance=Post_BinA_08
+{
+  Moveable=True VisGroups=(32) 
+  MeshFile=Post_BinA_08.gmt CollTarget=True HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+}
+
+//-------------------------------------------------------
+//-------------------ANIMATED OBJECTS--------------------
+//-------------------------------------------------------
+
+Instance=StarterWorker_000
+{
+  VisGroups=(32)
+  MeshFile=StarterWorker_000.gmt CollTarget=False HATTarget=False ShadowCaster=(Static, Solid) ShadowGroups=(12) 
+  AnimFile=CW_FLAGDOWN.ANM 
+  AnimFile=CW_FLAGDOWN.ANM 
+  AnimFile=CW_FLAGHELD.ANM 
+  AnimFile=CW_FLAGWAVE.ANM 
+  AnimFile=SW_PRESTART.ANM 
+  AnimFile=SW_START.ANM 
+  AnimFile=SW_VICTORY.ANM 
+}
+
+//-------------------------------------------------------
+//------------------MANDATORY OBJECTS--------------------
+//-------------------------------------------------------
+
+Instance=xsector1
+{
+  Render=False 
+  MeshFile=xsector1.gmt CollTarget=True HATTarget=False 
+  Response=VEHICLE,TIMING
+}
+Instance=xsector2
+{
+  Render=False 
+  MeshFile=xsector2.gmt CollTarget=True HATTarget=False 
+  Response=VEHICLE,TIMING
+}
+Instance=xfinish
+{
+  Render=False 
+  MeshFile=xfinish.gmt CollTarget=True HATTarget=False 
+  Response=VEHICLE,TIMING
+}
+Instance=xpitin
+{
+  Render=False 
+  MeshFile=xpitin.gmt CollTarget=True HATTarget=False 
+  Response=VEHICLE,PITSTOP
+}
+Instance=xpitout
+{
+  Render=False 
+  MeshFile=xpitout.gmt CollTarget=True HATTarget=False 
+  Response=VEHICLE,PITSTOP
+}
+
+Instance=SkyBoxi
+{
+  Planes=(4) ReflectPlane=(0.000, 1.000, 0.000, 0.550) 
+  MeshFile=SkyBoxi.gmt CollTarget=False HATTarget=False Reflect=True 
+}
+Instance=ShadowBox
+{
+  MeshFile=ShadowBox.gmt CollTarget=False HATTarget=False ShadowObject=(Static, Solid) ShadowGroups=(15) LODOut=(1000)
+}
+
+//-------------------------------------------------------
+//-------------------REFLECTION MAPS---------------------
+//-------------------------------------------------------
+
+ReflectionMapper=REFLECTEDENV
+{
+  Type=Planar
+  TextureSize=(1024)
+  UpdateRate=(100.000)
+  StaticSwitch=(150.000)
+  TrackingIns=NULL
+  IncludeIns=Walls_Inside
+  IncludeIns=Walls_Outside
+  IncludeIns=Armcos
+  IncludeIns=SafetyFences
+  IncludeIns=SFencePosts
+  IncludeIns=StartLight
+  IncludeIns=LightPosts
+  IncludeIns=Billboards
+  IncludeIns=NightLight01Glow
+  IncludeIns=Cone_01
+  IncludeIns=Cone_02
+  IncludeIns=Cone_03
+  IncludeIns=Cone_04
+  IncludeIns=Cone_05
+  IncludeIns=Cone_06
+  IncludeIns=Cone_07
+  IncludeIns=Cone_08
+}
+
+ReflectionMapper=STATIC01
+{
+  Type=Cubic
+  TextureSize=(512)
+  UpdateRate=(0.100)
+  StaticSwitch=(100.000)
+  Pos=(-40.777466,0.000000,-46.012)
+  IncludeIns=RaceSurface_01
+  IncludeIns=Infield
+  IncludeIns=Outfield
+  IncludeIns=Walls_Inside
+  IncludeIns=Walls_Outside
+}
+
+ReflectionMapper=REFMAP0
+{
+  Type=Cubic
+  TextureSize=(1024)
+  UpdateRate=(100.000)
+  StaticSwitch=(100.000)
+  TrackingIns=True
+  IncludeIns=NightLight01Glow
+  IncludeIns=RaceSurface_01
+  IncludeIns=Infield
+  IncludeIns=Outfield
+  IncludeIns=RoadLines
+  IncludeIns=Walls_Inside
+  IncludeIns=Walls_Outside
+  IncludeIns=Armcos
+  IncludeIns=BarrierA_01
+  IncludeIns=SafetyFences
+  IncludeIns=SFencePosts
+  IncludeIns=Fence_ChainLink
+  IncludeIns=Container_01
+  IncludeIns=Structures
+  IncludeIns=Struct_OilWaste
+  IncludeIns=KartReg
+  IncludeIns=LightPosts
+  IncludeIns=wires
+  IncludeIns=StartLight
+  IncludeIns=Billboards
+  IncludeIns=FuelSign_01
+  IncludeIns=OutHouses_01
+  IncludeIns=Speakers
+  IncludeIns=Flagpoles
+  IncludeIns=Flag_01
+  IncludeIns=Flag_02
+  IncludeIns=Flag_03
+  IncludeIns=Trees3D_01
+  IncludeIns=Trees3D_02
+  IncludeIns=Trees2D_01
+  IncludeIns=GrandstandC_01
+  IncludeIns=Grandstand_01
+  IncludeIns=ComBox
+  IncludeIns=Veh_Trailers_01
+}

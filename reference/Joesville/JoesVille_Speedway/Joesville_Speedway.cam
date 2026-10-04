@@ -1,0 +1,441 @@
+//[[gMa1.002f (c)2015    ]] [[            ]]
+TrackingCam=TRACKING002
+{
+  Fov=(38.000000, 35.000019)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(1.050000, 1450.000000)
+  LODMultiplier=(6.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(1)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(131.905365, -3.747685, 68.633354)
+  Orientation=(-0.002736, 4.328239, 0.000000)
+  ActivationLocation=(122.513206, -0.885628, 58.195118)
+  ActivationRadius=(25.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.200000)
+  RainVol=(1.000000)
+  Groups=1
+  TrackingRate=(0.000000)
+  PositionOffset=(0.000000, 1.000000, 0.000000)
+  MovementRate=(0.000000)
+}
+TrackingCam=TRACKING003
+{
+  Fov=(38.000000, 32.000050)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(1.050000, 1450.000000)
+  LODMultiplier=(6.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(1)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(-113.778214, -4.491021, 115.072014)
+  Orientation=(-0.005549, 1.849204, 0.000000)
+  ActivationLocation=(13.076284, -2.944658, 133.102844)
+  ActivationRadius=(25.000000)
+  ActivationLocation=(-126.140388, -1.481304, 78.111916)
+  ActivationRadius=(25.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.200000)
+  RainVol=(1.000000)
+  Groups=1
+  TrackingRate=(0.000000)
+  PositionOffset=(0.000000, 0.800000, 0.000000)
+  MovementRate=(0.000000)
+}
+TrackingCam=TRACKING004
+{
+  Fov=(38.000000, 17.000000)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(1.050000, 1450.000000)
+  LODMultiplier=(6.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(1)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(131.558243, -3.863335, 48.484390)
+  Orientation=(0.006223, 4.229341, 0.000000)
+  ActivationLocation=(122.638969, -1.940153, 46.960026)
+  ActivationRadius=(25.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.200000)
+  RainVol=(1.000000)
+  Groups=2
+  TrackingRate=(0.000000)
+  PositionOffset=(0.000000, 1.000000, 0.000000)
+  MovementRate=(0.000000)
+}
+TrackingCam=TRACKING005
+{
+  Fov=(38.000000, 18.000000)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(0.800000, 1450.000000)
+  LODMultiplier=(6.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(1)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(65.658745, -3.743651, 138.541779)
+  Orientation=(0.022415, 4.727644, 0.000000)
+  ActivationLocation=(108.564079, -2.390448, 110.664375)
+  ActivationRadius=(25.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.200000)
+  RainVol=(1.000000)
+  Groups=2
+  TrackingRate=(0.000000)
+  PositionOffset=(0.000000, 1.000000, 0.000000)
+  MovementRate=(0.000000)
+}
+TrackingCam=TRACKING006
+{
+  Fov=(38.000000, 17.999992)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(1.050000, 1450.000000)
+  LODMultiplier=(6.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(1)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(-145.045197, -24.444599, 77.429955)
+  Orientation=(-0.140238, 2.075089, 0.000000)
+  ActivationLocation=(-103.068222, -8.419784, 101.323105)
+  ActivationRadius=(25.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.200000)
+  RainVol=(1.000000)
+  Groups=2
+  TrackingRate=(0.000000)
+  PositionOffset=(0.000000, 1.000000, 0.000000)
+  MovementRate=(0.000000)
+}
+TrackingCam=TRACKING001
+{
+  Fov=(38.000000, 18.000008)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(1.050000, 1450.000000)
+  LODMultiplier=(6.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(3)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(95.792473, -15.533468, -3.193879)
+  Orientation=(-0.043891, 3.900564, 0.000000)
+  ActivationLocation=(-51.022896, -1.299252, -0.596486)
+  ActivationRadius=(25.000000)
+  ActivationLocation=(4.350887, -1.579677, -0.544174)
+  ActivationRadius=(25.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.200000)
+  RainVol=(1.000000)
+  Groups=15
+  TrackingRate=(0.000000)
+  PositionOffset=(0.000000, 0.000000, 0.000000)
+  MovementRate=(0.030000)
+  MovementPath
+  {
+    ControlPoint=(96.161118, -2.818238, -3.184305)
+    ControlPoint=(96.087387, -5.361284, -3.186220)
+    ControlPoint=(96.013657, -7.904330, -3.188135)
+    ControlPoint=(95.939934, -10.447376, -3.190050)
+    ControlPoint=(95.866203, -12.990422, -3.191964)
+    ControlPoint=(95.792473, -15.533468, -3.193879)
+    ControlPoint=(95.385078, -18.700956, -3.206033)
+  }
+}
+TrackingCam=TRACKING007
+{
+  Fov=(38.000000, 20.000000)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(1.050000, 1450.000000)
+  LODMultiplier=(6.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(3)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(-36.778118, -3.230161, 112.080009)
+  Orientation=(0.152199, 3.156746, 0.000000)
+  ActivationLocation=(57.214565, -1.599276, 132.229355)
+  ActivationRadius=(25.000000)
+  ActivationLocation=(3.698950, -1.870690, 132.080948)
+  ActivationRadius=(25.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.200000)
+  RainVol=(1.000000)
+  Groups=4
+  TrackingRate=(0.000000)
+  PositionOffset=(0.000000, 0.000000, 0.000000)
+  MovementRate=(0.150000)
+  MovementPath
+  {
+    ControlPoint=(-55.156311, -3.204077, 112.217255)
+    ControlPoint=(-36.778118, -3.230161, 112.080009)
+    ControlPoint=(-18.399923, -3.256245, 111.942764)
+    ControlPoint=(-0.021729, -3.282330, 111.805527)
+    ControlPoint=(18.356464, -3.308414, 111.668282)
+    ControlPoint=(36.734657, -3.334498, 111.531036)
+  }
+}
+TrackingCam=TRACKING008
+{
+  Fov=(38.000000, 29.999983)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(1.050000, 1450.000000)
+  LODMultiplier=(6.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(1)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(-7.995204, -10.640288, 64.022133)
+  Orientation=(-0.026615, 3.521860, 0.000000)
+  ActivationLocation=(79.651581, -1.490662, 129.922714)
+  ActivationRadius=(25.000000)
+  ActivationLocation=(-3.687922, -1.420709, 130.942703)
+  ActivationRadius=(25.000000)
+  ActivationLocation=(-125.313515, -2.517992, 83.891220)
+  ActivationRadius=(25.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.600000)
+  RainVol=(1.000000)
+  Groups=8
+  TrackingRate=(0.000000)
+  PositionOffset=(0.000000, 1.500000, 0.000000)
+  MovementRate=(0.000000)
+}
+StaticCam=STATIC001
+{
+  Fov=(29.000000, 16.000000)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(1.350000, 1950.000000)
+  LODMultiplier=(3.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(0)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(133.755737, -4.183169, 62.917175)
+  Orientation=(-0.049125, -0.638022, 0.000000)
+  ActivationLocation=(104.011292, -1.727915, 22.801846)
+  ActivationRadius=(25.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.400000)
+  RainVol=(1.000000)
+  Groups=4
+}
+StaticCam=STATIC002
+{
+  Fov=(29.000000, 32.000027)
+  Clear=FALSE
+  Color=(0, 0, 0)
+  ClipPlanes=(1.350000, 1950.000000)
+  LODMultiplier=(3.000000)
+  Size=(1.000000, 1.000000)
+  Center=(0.500000, 0.500000)
+  MipmapLODBias=(0.000000)
+  Flags1=(0)
+  Flags2=(0)
+  SoundName=""
+  SoundParams=(1.000,1,15)
+  MinShadowRange=(0.100)
+  MaxShadowRange=(450.000)
+  ShadowSplitRatio=(0.920)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,100.000)
+  ShadowParams=(0.000050,1.000,0.000)
+  ShadowParams=(0.000000,0.000,0.000)
+  Position=(-115.865173, -0.355619, 53.176563)
+  Orientation=(0.106924, 3.375117, 0.000000)
+  ActivationLocation=(-124.239502, -1.472567, 61.971558)
+  ActivationRadius=(16.000000)
+  ListenerPos=(-3.402823e+038, -3.402823e+038, -3.402823e+038)
+  ListenerVol=(1.400000)
+  RainVol=(1.000000)
+  Groups=4
+}
+AMBIENTSOUND=crowd
+{
+  FILE=FANS_STADIUM.WAV
+  ATTENUATION=(1.000000, 0.750000, 3.000000, 0.022000)
+  POSITION=(32.422806, 9.730540, 22.297468)
+}
+AMBIENTSOUND=crowd
+{
+  FILE=FANS_STADIUM.WAV
+  ATTENUATION=(1.000000, 0.750000, 3.000000, 0.022000)
+  POSITION=(7.419056, 9.256174, 22.139793)
+}
+AMBIENTSOUND=crowd
+{
+  FILE=FANS_STADIUM.WAV
+  ATTENUATION=(1.000000, 0.750000, 3.000000, 0.022000)
+  POSITION=(-28.937918, 8.640656, 19.696461)
+}
+AMBIENTSOUND=crowd
+{
+  FILE=FANS_STADIUM.WAV
+  ATTENUATION=(1.000000, 0.750000, 3.000000, 0.022000)
+  POSITION=(-138.838760, 8.489212, -29.291130)
+}
+AMBIENTSOUND=crowd
+{
+  FILE=FANS_STADIUM.WAV
+  ATTENUATION=(1.000000, 0.750000, 3.000000, 0.022000)
+  POSITION=(96.174789, 7.662375, -139.524582)
+}
+AMBIENTSOUND=generic
+{
+  FILE=CARNIVAL.WAV
+  ATTENUATION=(1.000000, 0.750000, 3.000000, 0.022000)
+  POSITION=(65.730110, 1.546695, -53.505871)
+}
+AMBIENTSOUND=generic
+{
+  FILE=CARNIVAL.WAV
+  ATTENUATION=(1.000000, 0.750000, 3.000000, 0.022000)
+  POSITION=(15.080603, 35.009171, 26.531094)
+}
+AMBIENTSOUND=announcer
+{
+  ATTENUATION=(1.000000, 0.750000, 3.000000, 0.022000)
+  POSITION=(11.465410, 35.012543, 31.667774)
+}

@@ -123,6 +123,30 @@ real asphalt colour from the video stills as a reference.
 - Keep the `.fbx`, the `.gmt`s and the `.scn` together. The next step (track folder, `.gdb`, `.tdf`, `.cam`)
   builds on them.
 
+## D. Build the track folder and drive it
+
+```bash
+python tools/make_track_folder.py --out "C:/Program Files (x86)/Steam/steamapps/common/rFactor 2/ModDev/Locations"
+```
+(or run it with no `--out` to write `dist/Locations/TeessideKarting` and copy that folder across yourself).
+
+It lays the track out like the ModDev sample track (Joesville), taking the surface-physics file and sky dome from it:
+
+| File | What it is |
+|---|---|
+| `TeessideKarting.tdf` | Surface physics, copied from the sample track (it has the `road`, `rmbl`, `gras`, `grxs` and `twal` entries our materials use) |
+| `Assets/GMT/` | Your 147 exported meshes plus the sample sky dome |
+| `Assets/Maps/` | The `.dds` textures plus the sky texture |
+| `Teesside_Karting/Teesside_Karting.gdb` | Track info: name, Middlesbrough's latitude/longitude and altitude, 1.629 km, UK time zone and summer time |
+| `Teesside_Karting/Teesside_Karting.scn` | The sample track's header (search paths, sun, fog), every exported instance with the right flags, and the sky |
+
+Not included yet, by design:
+- **`.AIW`** (AI line, grid, garages): record it in ModDev's AIW editor by driving laps (see Studio 397's AIW
+  tutorial). If ModDev won't load the track without one, say so and a starter AIW can be generated from the centreline.
+- **`.cam`** (TV cameras): place them with ModDev's camera tools once the track loads.
+
+Then start rFactor 2 from Steam, choose **Dev Mode**, and pick *Teesside Karting* with the sample car.
+
 ## Sources
 
 - [rFactor 2 Track Technology (Studio 397)](https://www.studio-397.com/wp-content/uploads/2016/12/rF2_Track_Technologyv3.pdf)
@@ -135,4 +159,6 @@ real asphalt colour from the video stills as a reference.
 - [PBR – A Guide in rFactor2 – rF2 Developers Guide](https://docs.studio-397.com/display/DG/PBR+-+A+Guide+in+rFactor2)
 - [3DSimED help (PDF)](http://www.sim-garage.co.uk/files/3DSimEDHelp.pdf)
 - [3DSimEd – Simwiki](https://www.simwiki.net/wiki/3DSimEd)
+- [Starting Developer Mode – rF2 Developers Guide](https://docs.studio-397.com/x/jABDAg)
+- [rF2 AIW Creation Tutorial (Studio 397)](https://www.studio-397.com/wp-content/uploads/2016/12/rF2_AIW_Creation_Tutorial.pdf)
 - [3DSimEd import/export video tutorial](https://www.youtube.com/watch?v=g8o915_akRw)

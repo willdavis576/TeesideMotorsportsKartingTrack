@@ -141,7 +141,7 @@ Steps:
 2. In 3DSimED (step-by-step: [`docs/rf2_export_guide.md`](docs/rf2_export_guide.md)), import the model, assign rF2 shaders to the materials (road, kerb, grass, terrain, tyre), export the
    GMTs and the `.scn`. Mark the road, kerb, verge, run-off and terrain objects as drivable/collidable, mark
    `tyrewall_collision` as collidable but not rendered, and mark the tyre stacks as visual only.
-3. Put the GMTs, textures and `.scn` in a track folder under ModDev, with `.gdb` (track info), `.tdf` (surface
+3. Run `python tools/make_track_folder.py --out "<rF2>/ModDev/Locations"` (details: [`docs/rf2_export_guide.md`](docs/rf2_export_guide.md) section D). It puts the GMTs, textures and `.scn` in a track folder under ModDev, with `.gdb` (track info), `.tdf` (surface
    physics, keyed on material names) and `.cam` copied from an existing unencrypted track and edited.
 4. Load it in ModDev. In the AIW editor, drive laps to record the racing line, then set the start/finish, sectors,
    pit lane, garages and grid.

@@ -1,5 +1,4 @@
 # Downloaded source data and generated output - large and/or licence-restricted
-data/
 build/
 __pycache__/
 *.pyc

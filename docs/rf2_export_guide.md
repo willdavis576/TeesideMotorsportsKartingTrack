@@ -22,10 +22,10 @@ where this guide names a menu, check it against the version you have.
    buildings and barriers can be named freely, because they aren't driven on.
 3. **File → Export → FBX (.fbx)**:
    - *Limit to*: everything you want in the track (or *Selected Objects*)
-   - *Object Types*: **Mesh** only (leave out the camera and light)
-   - *Scale*: **0.01**, *Apply Scalings*: **FBX Units Scale**. Blender's FBX files are in centimetres and
-     3DSimED reads the numbers as metres, so with Scale 1.00 the track comes out **100× too big**. That
-     happened on the first Teesside export; `tools/check_gmt.py` catches it (see section C).
+   - *Object Types*: **Mesh** only (click Mesh so it's the only one highlighted; leaves out the camera and light)
+   - *Scale*: **0.01**, *Apply Scalings*: **All Local** (Blender's default). With Scale 1.00 these settings made
+     the first Teesside export **100× too big**: Blender's FBX is in centimetres and 3DSimED reads the numbers as
+     metres. `tools/check_gmt.py` catches it (see section C).
    - *Forward*: **-Z Forward**, *Up*: **Y Up** (Blender's defaults; rF2 is Y-up)
    - *Geometry*: tick **Triangulate Faces** (the tyre-stack tops are 12-sided polygons), **Apply Modifiers**
    - *Path Mode*: **Copy**, with the embed button off, so the textures are copied next to the FBX

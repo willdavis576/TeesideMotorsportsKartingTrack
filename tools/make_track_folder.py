@@ -12,6 +12,11 @@ surface-physics file and sky from:
         Teesside_Karting/Teesside_Karting.scn  scene: search paths, sun, fog + every exported instance
         Teesside_Karting/Teesside_Karting.AIW  placeholder copy of the sample track's AIW (rF2 won't list a
                                                layout without one) unless an AIW is already there
+        TeessideKartingIcon.dds, Teesside_Karting/*icon*, *Thmb.tga, *_loading.jpg
+                                               track-map images like the sample track's (venue icon,
+                                               list icon, thumbnail, loading screen)
+        Teesside_Karting/*.cam, *.wet, *.rrbin placeholder copies of the sample's cameras, weather and
+                                               RealRoad presets, unless the layout has its own
 
 Copy <out>/TeessideKarting into ...\\steamapps\\common\\rFactor 2\\ModDev\\Locations\\, or point
 --out straight at that Locations folder.
@@ -29,6 +34,7 @@ from pathlib import Path
 from pyproj import Transformer
 
 from patch_scn import patch
+from png_to_dds import write_dds
 
 SCN_HEADER = """CUBEASF
 
@@ -100,6 +106,7 @@ GDB = """{layout}
   TrackName = {track_name}
   EventName = {track_name}
   VenueName = {venue}
+  VenueIcon = {folder}\{folder}Icon.dds
   Location = Middlesbrough, England, UK
   Length = {km:.3f} KM / {miles:.2f} Miles
   TrackType = Kart Track
@@ -148,6 +155,107 @@ GDB = """{layout}
 """
 
 
+def track_map(xy, size, fg, bg, line_frac=0.012, title=None):
+    """Plan view of the centreline as an RGBA image: fg line on bg (bg alpha 0 = transparent)."""
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from PIL import Image
+
+    w, h = size
+    fig = plt.figure(figsize=(w / 100, h / 100), dpi=100)
+    fig.patch.set_alpha(0)
+    ax = fig.add_axes([0.08, 0.08, 0.84, 0.84] if not title else [0.04, 0.1, 0.56, 0.8])
+    ax.set_axis_off()
+    pts = np.vstack([xy, xy[:1]])
+    ax.plot(pts[:, 0], pts[:, 1], color=fg, lw=max(1.5, min(w, h) * line_frac), solid_capstyle="round",
+            solid_joinstyle="round")
+    ax.plot(*xy[0], "o", color="white", ms=max(2, min(w, h) * 0.03), mec="black")  # start/finish
+    ax.set_aspect("equal")
+    if title:
+        fig.text(0.64, 0.56, title, color="white", fontsize=h / 30, fontweight="bold", va="center")
+        fig.text(0.64, 0.48, "Middlesbrough, UK", color="#cccccc", fontsize=h / 50, va="center")
+    fig.canvas.draw()
+    fg_img = Image.frombuffer("RGBA", fig.canvas.get_width_height(), fig.canvas.buffer_rgba()).copy()
+    plt.close(fig)
+    out = Image.new("RGBA", fg_img.size, bg)
+    out.alpha_composite(fg_img)
+    return out.resize(size)
+
+
+def write_icons(centreline_csv, layout_dir, root, folder, layout, track_name):
+    """Track-map images in the places and sizes the sample track has them."""
+    import csv
+    import numpy as np
+
+    rows = list(csv.DictReader(open(centreline_csv)))
+    xy = np.array([[float(r["x"]), -float(r["z"])] for r in rows])  # east, north
+    made = []
+
+    def dds(img, path):
+        write_dds(np.asarray(img.convert("RGBA")), path)
+        made.append(path)
+
+    def save(img, path, fmt):
+        img.save(path, fmt)
+        made.append(path)
+
+    dds(track_map(xy, (512, 512), "white", (40, 40, 40, 255)), root / f"{folder}Icon.dds")
+    save(track_map(xy, (102, 87), "white", (200, 20, 20, 255), 0.025), layout_dir / f"{layout}icon.tga", "TGA")
+    dds(track_map(xy, (512, 512), "#f0d000", (40, 40, 40, 255)), layout_dir / f"{layout}SMicon.dds")
+    save(track_map(xy, (190, 128), "#f0d000", (0, 0, 0, 0), 0.02), layout_dir / f"{layout}Thmb.tga", "TGA")
+    save(track_map(xy, (1920, 1080), "#e05030", (25, 25, 30, 255), 0.006, title=track_name).convert("RGB"),
+         layout_dir / f"{layout}_loading.jpg", "JPEG")
+    return made
+
+
+def placeholder_copies(ref, layout_dir, layout):
+    """Copy the sample layout's camera, weather and RealRoad preset files, renamed for this layout,
+    unless this layout already has its own. They're placeholders: the cameras sit at the sample track's
+    positions until replaced."""
+    sample_gdb = next((p for p in ref.rglob("*") if p.suffix.lower() == ".gdb"), None)
+    if sample_gdb is None:
+        return []
+    stem, made = sample_gdb.stem, []
+    for src in sample_gdb.parent.iterdir():
+        ext = src.suffix.lower()
+        if ext in (".cam", ".wet"):
+            dst = layout_dir / f"{layout}{src.suffix}"
+        elif ext == ".rrbin":
+            dst = layout_dir / src.name
+        else:
+            continue
+        if not any(p.suffix.lower() == ext and (ext == ".rrbin" and p.name == src.name or ext != ".rrbin")
+                   for p in layout_dir.iterdir()):
+            shutil.copy2(src, dst)
+            made.append(dst)
+    return made
+
+
+def control_clone(ref, out, name="ZZTestA"):
+    """An exact copy of the sample track under a new name, as a control: if even this doesn't show in
+    Dev Mode's track list, the problem isn't in our files."""
+    dst = out / name
+    if dst.exists():
+        shutil.rmtree(dst)
+    shutil.copytree(ref, dst)
+    gdb = next(p for p in dst.rglob("*") if p.suffix.lower() == ".gdb")
+    old_layout = gdb.stem
+    new_layout = f"{name}_Layout"
+    layout_dir = gdb.parent.rename(gdb.parent.with_name(new_layout))
+    for f in list(layout_dir.iterdir()):
+        if f.stem.lower().startswith(old_layout.lower()):
+            f.rename(f.with_name(new_layout + f.name[len(old_layout):]))
+    gdb = layout_dir / f"{new_layout}{gdb.suffix}"
+    text = gdb.read_bytes().decode("latin-1")
+    text = re.sub(rf"^{re.escape(old_layout)}", new_layout, text, count=1, flags=re.I)
+    text = re.sub(r"(TrackName\s*=).*", r"\1 ZZ Test A (sample copy)", text)
+    text = re.sub(r"(VenueName\s*=).*", r"\1 ZZ Test A", text)
+    gdb.write_bytes(text.encode("latin-1"))
+    return dst
+
+
 def write_crlf(path, text):
     """Write with Windows line endings, byte for byte. (write_text would translate "\n" again on
     Windows, turning "\r\n" into "\r\r\n", which rF2 can't parse.)"""
@@ -182,6 +290,9 @@ def main():
     ap.add_argument("--layout", default="Teesside_Karting")
     ap.add_argument("--track-name", default="Teesside Karting")
     ap.add_argument("--venue", default="Teesside Motorsports")
+    ap.add_argument("--centreline", default="build/centreline.csv", help="for the track-map icons")
+    ap.add_argument("--control-clone", action="store_true",
+                    help="also write ZZTestA, an exact renamed copy of the sample track, as a test")
     ap.add_argument("--no-placeholder-aiw", action="store_true",
                     help="don't copy the sample track's AIW when the layout has none")
     args = ap.parse_args()
@@ -242,6 +353,10 @@ def main():
         shutil.copy2(sample_aiw, aiw)
         placeholder = True
 
+    icons = write_icons(args.centreline, layout_out, root, args.folder, args.layout, args.track_name)
+    copies = placeholder_copies(ref, layout_out, args.layout)
+    clone = control_clone(ref, Path(args.out)) if args.control_clone else None
+
     names = {re.match(r"Instance\s*=\s*(\S+)", b).group(1) for b in blocks}
     missing = sorted({"xfinish", "xsector1", "xsector2", "xpitin", "xpitout"} - names)
     print(f"Wrote {root}")
@@ -252,6 +367,11 @@ def main():
               f"garages are the sample track's, not Teesside's; replace it with a recorded one.")
     elif existing:
         print(f"  AIW: kept existing {existing[0].name}")
+    print(f"  icons/thumbnail/loading screen: {', '.join(p.name for p in icons)}")
+    if copies:
+        print(f"  placeholders from the sample track: {', '.join(p.name for p in copies)}")
+    if clone:
+        print(f"  control track: {clone} (shows as 'ZZ Test A (sample copy)')")
     if missing:
         print(f"WARNING: the export has no {', '.join(missing)}; rF2 needs these timing/pit gates", file=sys.stderr)
         return 1

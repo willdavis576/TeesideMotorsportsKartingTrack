@@ -50,8 +50,16 @@ where this guide names a menu, check it against the version you have.
    | Buildings and other scenery | ✘ | ✘ | ✔ | Unless karts can hit them |
 
    *HAT* (height above terrain) is what the karts' wheels sit on, so every drivable surface needs it.
-5. **Export to rFactor 2 GMT** into a `GMT` folder, and export or save the `.scn`.
-6. **Compare the `.scn`** with `scene_instances.txt`. Each drivable instance should look like
+5. **Export to rFactor 2 GMT** into a `GMT` folder, and export or save the `.scn`. If you can't find
+   the Collide/HAT settings in 3DSimED, skip step 4 and use step 6.
+6. **Set the flags automatically.** If 3DSimED didn't set them, run
+   ```bash
+   python tools/patch_scn.py path/to/teesside.scn
+   ```
+   It sets Collide/HAT/Render on every road, kerb, verge, run-off, terrain and tyre piece. It keeps every other
+   setting, leaves objects it doesn't recognise (your own scenery) alone, and saves the original as `.scn.bak`.
+   Add `--dry-run` to see what it would change first.
+7. **Compare the `.scn`** with `scene_instances.txt`. Each drivable instance should look like
    ```
    Instance=road_e0_s1 { MeshFile=road_e0_s1.gmt CollTarget=True HATTarget=True Response=VEHICLE,TERRAIN }
    ```

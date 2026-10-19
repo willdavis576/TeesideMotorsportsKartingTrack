@@ -212,7 +212,7 @@ def write_icons(centreline_csv, layout_dir, root, folder, layout, track_name):
     return made
 
 
-def placeholder_copies(ref, layout_dir, layout):
+def placeholder_copies(ref, layout_dir, layout, sample_wet=False):
     """Copy the sample layout's weather file (.wet), renamed for this layout and with its RealRoad
     presets switched to "natural", unless the layout has its own (edited) one.
 
@@ -224,6 +224,19 @@ def placeholder_copies(ref, layout_dir, layout):
     if sample_gdb is None:
         return [], []
     made, removed = [], []
+    if sample_wet:
+        # Exactly as the sample has them (the setup that loaded, with an .rrbin warning): its .wet
+        # unchanged plus the RealRoad presets it points at.
+        for src in sample_gdb.parent.iterdir():
+            ext = src.suffix.lower()
+            if ext in (".wet", ".rrbin"):
+                for p in layout_dir.iterdir():
+                    if ext == ".wet" and p.suffix.lower() == ".wet":
+                        p.unlink()
+                dst = layout_dir / (f"{layout}{src.suffix}" if ext == ".wet" else src.name)
+                shutil.copy2(src, dst)
+                made.append(dst)
+        return made, removed
     for src in sample_gdb.parent.iterdir():
         ext = src.suffix.lower()
         if ext == ".wet":
@@ -318,6 +331,10 @@ def main():
     ap.add_argument("--plain-aiw", action="store_true",
                     help="use the sample track's AIW completely unchanged (spawns at the sample's garage spot); "
                          "for ruling out the generated AIW if rF2 crashes")
+    ap.add_argument("--sample-cam", action="store_true",
+                    help="use the sample track's .cam (renamed) instead of the generated Teesside cameras")
+    ap.add_argument("--sample-wet", action="store_true",
+                    help="use the sample track's .wet unchanged plus its RealRoad presets (.rrbin)")
     ap.add_argument("--no-reflection-maps", action="store_true",
                     help="leave the STATIC01/REFMAP0 reflection maps out of the scene")
     ap.add_argument("--no-placeholder-aiw", action="store_true",
@@ -407,13 +424,18 @@ def main():
     if ok and sample_cam is not None:
         if old is not None:
             old.unlink()
-        write_crlf(layout_out / f"{args.layout}.cam", make_cam(sample_cam.read_bytes().decode("latin-1"), lap))
-        cam_state = "generated"
+        if args.sample_cam:
+            shutil.copy2(sample_cam, layout_out / f"{args.layout}.cam")
+            cam_state = "sample track's cameras (renamed)"
+        else:
+            write_crlf(layout_out / f"{args.layout}.cam",
+                       make_cam(sample_cam.read_bytes().decode("latin-1"), lap))
+            cam_state = "generated"
     elif old is not None:
         cam_state = f"kept {old.name}"
 
     icons = write_icons(args.centreline, layout_out, root, args.folder, args.layout, args.track_name)
-    copies, removed = placeholder_copies(ref, layout_out, args.layout)
+    copies, removed = placeholder_copies(ref, layout_out, args.layout, sample_wet=args.sample_wet)
     clone = control_clone(ref, Path(args.out)) if args.control_clone else None
 
     missing = sorted({"xfinish", "xsector1", "xsector2", "xpitin", "xpitout"} - set(names))

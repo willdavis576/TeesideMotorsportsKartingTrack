@@ -315,6 +315,11 @@ def main():
                          "added to the sample track's list, e.g. --filter Kart")
     ap.add_argument("--control-clone", action="store_true",
                     help="also write ZZTestA, an exact renamed copy of the sample track, as a test")
+    ap.add_argument("--plain-aiw", action="store_true",
+                    help="use the sample track's AIW completely unchanged (spawns at the sample's garage spot); "
+                         "for ruling out the generated AIW if rF2 crashes")
+    ap.add_argument("--no-reflection-maps", action="store_true",
+                    help="leave the STATIC01/REFMAP0 reflection maps out of the scene")
     ap.add_argument("--no-placeholder-aiw", action="store_true",
                     help="don't copy the sample track's AIW when the layout has none")
     args = ap.parse_args()
@@ -356,7 +361,7 @@ def main():
     lap = Lap(args.centreline)
     names = [re.match(r"Instance\s*=\s*(\S+)", b).group(1) for b in blocks]
     scn = (SCN_HEADER.format(search_paths=search) + "\n".join(blocks) + "\n" + SKY_INSTANCE
-           + reflection_mappers(names, lap))
+           + ("" if args.no_reflection_maps else reflection_mappers(names, lap)))
     write_crlf(layout_out / f"{args.layout}.scn", scn)
 
     summary = json.loads(Path(args.summary).read_text())
@@ -389,9 +394,13 @@ def main():
             sys.exit(f"no .AIW under {ref} to use as a placeholder")
         if old is not None:
             old.unlink()
-        write_crlf(layout_out / f"{args.layout}.AIW",
-                   relocate_aiw(sample_aiw.read_bytes().decode("latin-1"), lap))
-        aiw_state = "generated"
+        if args.plain_aiw:
+            shutil.copy2(sample_aiw, layout_out / f"{args.layout}.AIW")
+            aiw_state = "plain copy of the sample's (spawn at the sample's garage spot)"
+        else:
+            write_crlf(layout_out / f"{args.layout}.AIW",
+                       relocate_aiw(sample_aiw.read_bytes().decode("latin-1"), lap))
+            aiw_state = "generated"
     elif old is not None:
         aiw_state = f"kept {old.name}"
     ok, old = replaceable(".cam", sample_cam)

@@ -60,11 +60,31 @@ def ori(yaw):
     return f"(0.000,{yaw:.3f},0.000)"
 
 
-def relocate_aiw(template, lap, grid=20, teams=20, garages=3):
+def section_counts(template):
+    """How many entries each spawn section of an AIW has, e.g. {"[GRID]": 75, "[PITS]": 15, ...}."""
+    keys = {"[GRID]": "GridIndex", "[ALTGRID]": "GridIndex", "[TELEPORT]": "GridIndex",
+            "[PITS]": "TeamIndex", "[AUX]": "LocationIndex"}
+    parts = re.split(r"^(\[\w+\])[ \t]*\r?$", template.replace("\r\n", "\n"), flags=re.M)
+    counts = {}
+    for name, body in zip(parts[1::2], parts[2::2]):
+        if name in keys:
+            counts[name] = len(re.findall(rf"^{keys[name]}=", body, flags=re.M))
+        if name == "[PITS]":
+            teams = max(counts[name], 1)
+            counts["garages"] = len(re.findall(r"^GarPos=", body, flags=re.M)) // teams
+    return counts
+
+
+def relocate_aiw(template, lap):
     """The sample AIW with its grid, teleport, pit, garage and aux spots moved onto this layout's start
     straight. The waypoints (racing line) are left as the sample's: they still need recording for this
-    track, but the file stays valid and the car spawns on the right track, facing the right way."""
-    def grid_block(offset):
+    track, but the file stays valid and the car spawns on the right track, facing the right way.
+    Every section keeps exactly the sample's number of entries: pit teams are tied to pit-lane branches
+    in the waypoints, and a different count crashed rF2 while loading."""
+    counts = section_counts(template)
+    teams, garages = counts.get("[PITS]", 0), counts.get("garages", 0)
+
+    def grid_block(offset, grid):
         out = []
         for k in range(grid):
             p, a = lap.at(-(offset + 7.0 * (k // 2)), lateral=2.0 if k % 2 == 0 else -2.0)
@@ -81,11 +101,13 @@ def relocate_aiw(template, lap, grid=20, teams=20, garages=3):
             pits += [f"GarPos=({g},{gp[0]:.3f},{gp[1]:.3f},{gp[2]:.3f})", f"GarOri=({g},0.000,{ga:.3f},0.000)"]
 
     aux = []
-    for k in range(2):
+    for k in range(counts.get("[AUX]", 0)):
         p, a = lap.at(-30.0)
         aux += [f"LocationIndex={k}", f"Pos={fmt3(p)}", f"Ori={ori(a)}"]
 
-    new = {"[GRID]": grid_block(8.0), "[ALTGRID]": grid_block(8.0), "[TELEPORT]": grid_block(8.0),
+    new = {"[GRID]": grid_block(8.0, counts.get("[GRID]", 0)),
+           "[ALTGRID]": grid_block(8.0, counts.get("[ALTGRID]", 0)),
+           "[TELEPORT]": grid_block(8.0, counts.get("[TELEPORT]", 0)),
            "[PITS]": pits, "[AUX]": aux}
     parts = re.split(r"^(\[\w+\])[ \t]*\r?$", template.replace("\r\n", "\n"), flags=re.M)
     out = [parts[0].rstrip("\n").split("\n")[0], MARKER + ": sample racing line, Teesside grid/pits/garages",

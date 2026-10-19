@@ -36,9 +36,13 @@ def test_yaw_points_along_the_lap(tmp_path):
 
 def test_relocated_spots_sit_on_the_start_straight(tmp_path):
     lap = square_lap(tmp_path)
-    tpl = "//hdr\n[Features]\nx=1\n[GRID]\nGridIndex=0\nPos=(9,9,9)\nOri=(0,0,0)\n[PITS]\nTeamIndex=0\n" \
-          "[Waypoint]\nwp_pos=(5,5,5)\n"
-    out = relocate_aiw(tpl, lap, grid=4, teams=2)
+    grid = "".join(f"GridIndex={k}\nPos=(9,9,9)\nOri=(0,0,0)\n" for k in range(4))
+    pits = "".join(f"TeamIndex={t}\nPitPos=(9,9,9)\nPitOri=(0,0,0)\n" + "".join(
+        f"GarPos=({g},9,9,9)\nGarOri=({g},0,0,0)\n" for g in range(3)) for t in range(2))
+    tpl = f"//hdr\n[Features]\nx=1\n[GRID]\n{grid}[PITS]\n{pits}[Waypoint]\nwp_pos=(5,5,5)\n"
+    out = relocate_aiw(tpl, lap)
+    # Same number of entries as the template in every section.
+    assert out.count("GridIndex=") == 4 and out.count("TeamIndex=") == 2 and out.count("GarPos=") == 6
     assert out.startswith("//hdr\n" + MARKER)
     grid = out[out.index("[GRID]"):out.index("[PITS]")]
     pos = [tuple(map(float, l[5:-1].split(","))) for l in grid.splitlines() if l.startswith("Pos=")]

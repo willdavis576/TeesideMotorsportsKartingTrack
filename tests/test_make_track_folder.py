@@ -100,8 +100,16 @@ def test_folder_layout(tmp_path):
     layout = root / "Teesside_Karting"
     assert (root / "TeessideKartingIcon.dds").read_bytes()[:4] == b"DDS "
     for f in ("Teesside_Kartingicon.tga", "Teesside_KartingThmb.tga", "Teesside_Karting_loading.jpg",
-              "Teesside_KartingSMicon.dds", "Teesside_Karting.wet", "Team_Light.rrbin"):
+              "Teesside_KartingSMicon.dds", "Teesside_Karting.wet"):
         assert (layout / f).exists(), f
+    # RealRoad presets belong to the sample's road mesh: never copied, and old copies are cleaned up.
+    assert not (layout / "Team_Light.rrbin").exists()
+    (layout / "Team_Light.rrbin").write_bytes(b"rr")      # stale copy from an earlier version
+    (layout / "Teesside_Own.rrbin").write_bytes(b"ours")  # one saved for this track
+    subprocess.run([sys.executable, str(ROOT / "tools/make_track_folder.py"), "--gmt", str(gmt),
+                    "--textures", str(tex), "--summary", str(summary), "--reference", str(ref),
+                    "--out", str(out), "--centreline", str(centreline)], check=True)
+    assert not (layout / "Team_Light.rrbin").exists() and (layout / "Teesside_Own.rrbin").exists()
 
     # Control track: renamed copy of the sample.
     clone_gdb = out / "ZZTestA" / "ZZTestA_Layout" / "ZZTestA_Layout.gdb"

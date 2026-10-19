@@ -17,8 +17,7 @@ surface-physics file and sky from:
         TeessideKartingIcon.dds, Teesside_Karting/*icon*, *Thmb.tga, *_loading.jpg
                                                track-map images like the sample track's (venue icon,
                                                list icon, thumbnail, loading screen)
-        Teesside_Karting/*.wet, *.rrbin        placeholder copies of the sample's weather and RealRoad
-                                               presets, unless the layout has its own
+        Teesside_Karting/Teesside_Karting.wet  placeholder copy of the sample's weather file
 
 Copy <out>/TeessideKarting into ...\\steamapps\\common\\rFactor 2\\ModDev\\Locations\\, or point
 --out straight at that Locations folder.
@@ -214,26 +213,28 @@ def write_icons(centreline_csv, layout_dir, root, folder, layout, track_name):
 
 
 def placeholder_copies(ref, layout_dir, layout):
-    """Copy the sample layout's camera, weather and RealRoad preset files, renamed for this layout,
-    unless this layout already has its own. They're placeholders: the cameras sit at the sample track's
-    positions until replaced."""
+    """Copy the sample layout's weather file (.wet), renamed for this layout, unless it has its own.
+
+    RealRoad presets (.rrbin) are NOT copied: they store rubber/dust per vertex of the sample track's
+    road and rF2 rejects them on any other track. Copies made by earlier versions of this script
+    (byte-identical to the sample's) are removed; presets saved for this track are kept.
+    Returns (copied, removed)."""
     sample_gdb = next((p for p in ref.rglob("*") if p.suffix.lower() == ".gdb"), None)
     if sample_gdb is None:
-        return []
-    stem, made = sample_gdb.stem, []
+        return [], []
+    made, removed = [], []
     for src in sample_gdb.parent.iterdir():
         ext = src.suffix.lower()
-        if ext == ".wet":
+        if ext == ".wet" and not any(p.suffix.lower() == ".wet" for p in layout_dir.iterdir()):
             dst = layout_dir / f"{layout}{src.suffix}"
-        elif ext == ".rrbin":
-            dst = layout_dir / src.name
-        else:
-            continue
-        if not any(p.suffix.lower() == ext and (ext == ".rrbin" and p.name == src.name or ext != ".rrbin")
-                   for p in layout_dir.iterdir()):
             shutil.copy2(src, dst)
             made.append(dst)
-    return made
+        elif ext == ".rrbin":
+            stale = layout_dir / src.name
+            if stale.exists() and stale.read_bytes() == src.read_bytes():
+                stale.unlink()
+                removed.append(stale)
+    return made, removed
 
 
 def control_clone(ref, out, name="ZZTestA"):
@@ -388,7 +389,7 @@ def main():
         cam_state = f"kept {old.name}"
 
     icons = write_icons(args.centreline, layout_out, root, args.folder, args.layout, args.track_name)
-    copies = placeholder_copies(ref, layout_out, args.layout)
+    copies, removed = placeholder_copies(ref, layout_out, args.layout)
     clone = control_clone(ref, Path(args.out)) if args.control_clone else None
 
     missing = sorted({"xfinish", "xsector1", "xsector2", "xpitin", "xpitout"} - set(names))
@@ -404,6 +405,9 @@ def main():
     print(f"  icons/thumbnail/loading screen: {', '.join(p.name for p in icons)}")
     if copies:
         print(f"  placeholders from the sample track: {', '.join(p.name for p in copies)}")
+    if removed:
+        print(f"  removed the sample track's RealRoad presets (they only fit its road): "
+              f"{', '.join(p.name for p in removed)}")
     if clone:
         print(f"  control track: {clone} (shows as 'ZZ Test A (sample copy)')")
     if missing:

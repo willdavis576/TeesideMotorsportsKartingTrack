@@ -10,13 +10,15 @@ surface-physics file and sky from:
         Assets/Maps/*.dds                      textures
         Teesside_Karting/Teesside_Karting.gdb  track info (name, location, length, time zone...)
         Teesside_Karting/Teesside_Karting.scn  scene: search paths, sun, fog + every exported instance
-        Teesside_Karting/Teesside_Karting.AIW  placeholder copy of the sample track's AIW (rF2 won't list a
-                                               layout without one) unless an AIW is already there
+        Teesside_Karting/Teesside_Karting.AIW  the sample track's AIW with grid/pits/garages moved onto our
+                                               start straight (rF2 won't list a layout without an AIW);
+                                               an AIW you record in ModDev is never overwritten
+        Teesside_Karting/Teesside_Karting.cam  tracking TV cameras around the lap (kept if you edit them)
         TeessideKartingIcon.dds, Teesside_Karting/*icon*, *Thmb.tga, *_loading.jpg
                                                track-map images like the sample track's (venue icon,
                                                list icon, thumbnail, loading screen)
-        Teesside_Karting/*.cam, *.wet, *.rrbin placeholder copies of the sample's cameras, weather and
-                                               RealRoad presets, unless the layout has its own
+        Teesside_Karting/*.wet, *.rrbin        placeholder copies of the sample's weather and RealRoad
+                                               presets, unless the layout has its own
 
 Copy <out>/TeessideKarting into ...\\steamapps\\common\\rFactor 2\\ModDev\\Locations\\, or point
 --out straight at that Locations folder.
@@ -35,6 +37,7 @@ from pyproj import Transformer
 
 from patch_scn import patch
 from png_to_dds import write_dds
+from rf2_layout import MARKER, Lap, make_cam, reflection_mappers, relocate_aiw
 
 SCN_HEADER = """CUBEASF
 
@@ -220,7 +223,7 @@ def placeholder_copies(ref, layout_dir, layout):
     stem, made = sample_gdb.stem, []
     for src in sample_gdb.parent.iterdir():
         ext = src.suffix.lower()
-        if ext in (".cam", ".wet"):
+        if ext == ".wet":
             dst = layout_dir / f"{layout}{src.suffix}"
         elif ext == ".rrbin":
             dst = layout_dir / src.name
@@ -331,7 +334,10 @@ def main():
     exported, _ = patch(scn_path.read_text(errors="replace"))
     # 3DSimED writes "VisGroups=(32)ReflectPlane=..."; the sample track separates them with a space.
     blocks = [re.sub(r"\)(?=[A-Za-z])", ") ", b) for b in instance_blocks(exported)]
-    scn = SCN_HEADER.format(search_paths=search) + "\n".join(blocks) + "\n" + SKY_INSTANCE
+    lap = Lap(args.centreline)
+    names = [re.match(r"Instance\s*=\s*(\S+)", b).group(1) for b in blocks]
+    scn = (SCN_HEADER.format(search_paths=search) + "\n".join(blocks) + "\n" + SKY_INSTANCE
+           + reflection_mappers(names, lap))
     write_crlf(layout_out / f"{args.layout}.scn", scn)
 
     summary = json.loads(Path(args.summary).read_text())
@@ -342,31 +348,55 @@ def main():
     write_crlf(layout_out / f"{args.layout}.gdb", gdb)
 
     # rF2 only lists a layout that has an AIW (AI line, grid, garages) next to its .gdb and .scn. Until a
-    # Teesside one is recorded, use the sample track's as a placeholder; never overwrite a real one.
-    aiw = layout_out / f"{args.layout}.AIW"
-    existing = [p for p in layout_out.glob("*") if p.suffix.lower() == ".aiw"]
+    # Teesside one is recorded, use the sample track's with its grid/pit/garage spots moved onto our start
+    # straight. A generated file (marker line) or a plain copy of the sample is replaced on every run; an
+    # AIW recorded in ModDev is never touched. Same for the TV cameras.
     sample_aiw = next((p for p in ref.rglob("*") if p.suffix.lower() == ".aiw"), None)
-    placeholder = False
-    if not existing and not args.no_placeholder_aiw:
+    sample_cam = next((p for p in ref.rglob("*") if p.suffix.lower() == ".cam" and p.parent != ref), None)
+
+    def replaceable(ext, sample):
+        found = [p for p in layout_out.glob("*") if p.suffix.lower() == ext]
+        if not found:
+            return True, None
+        text = found[0].read_bytes()
+        ours = MARKER.encode() in text or (sample is not None and text == sample.read_bytes())
+        return ours, found[0]
+
+    aiw_state, cam_state = "none", "none"
+    ok, old = replaceable(".aiw", sample_aiw)
+    if ok and not args.no_placeholder_aiw:
         if sample_aiw is None:
             sys.exit(f"no .AIW under {ref} to use as a placeholder")
-        shutil.copy2(sample_aiw, aiw)
-        placeholder = True
+        if old is not None:
+            old.unlink()
+        write_crlf(layout_out / f"{args.layout}.AIW",
+                   relocate_aiw(sample_aiw.read_bytes().decode("latin-1"), lap))
+        aiw_state = "generated"
+    elif old is not None:
+        aiw_state = f"kept {old.name}"
+    ok, old = replaceable(".cam", sample_cam)
+    if ok and sample_cam is not None:
+        if old is not None:
+            old.unlink()
+        write_crlf(layout_out / f"{args.layout}.cam", make_cam(sample_cam.read_bytes().decode("latin-1"), lap))
+        cam_state = "generated"
+    elif old is not None:
+        cam_state = f"kept {old.name}"
 
     icons = write_icons(args.centreline, layout_out, root, args.folder, args.layout, args.track_name)
     copies = placeholder_copies(ref, layout_out, args.layout)
     clone = control_clone(ref, Path(args.out)) if args.control_clone else None
 
-    names = {re.match(r"Instance\s*=\s*(\S+)", b).group(1) for b in blocks}
-    missing = sorted({"xfinish", "xsector1", "xsector2", "xpitin", "xpitout"} - names)
+    missing = sorted({"xfinish", "xsector1", "xsector2", "xpitin", "xpitout"} - set(names))
     print(f"Wrote {root}")
     print(f"  {len(gmts)} meshes + sky, {len(textures)} textures + sky texture, {len(blocks)} instances in the scene")
     print(f"  track info: {args.track_name}, {km:.3f} km, lat {lat:.5f} lon {lon:.5f}")
-    if placeholder:
-        print(f"  AIW: PLACEHOLDER copied from {sample_aiw.name} so rF2 lists the track. Its racing line, grid and "
-              f"garages are the sample track's, not Teesside's; replace it with a recorded one.")
-    elif existing:
-        print(f"  AIW: kept existing {existing[0].name}")
+    if aiw_state == "generated":
+        print(f"  AIW: generated from {sample_aiw.name}: grid, pits and garages on Teesside's start straight "
+              f"(you spawn just past the line); racing line is still the sample's, so record a Teesside one")
+    else:
+        print(f"  AIW: {aiw_state}")
+    print(f"  TV cameras: {'12 Teesside tracking cameras' if cam_state == 'generated' else cam_state}")
     print(f"  icons/thumbnail/loading screen: {', '.join(p.name for p in icons)}")
     if copies:
         print(f"  placeholders from the sample track: {', '.join(p.name for p in copies)}")

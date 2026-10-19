@@ -43,7 +43,8 @@ def test_folder_layout(tmp_path):
     (ref / "Layout" / "Sample.cam").write_text(
         "//header\nTrackingCam=TRACKING002\n{\n  Position=(1, 2, 3)\n  Orientation=(0, 0, 0)\n"
         "  ActivationLocation=(1, 2, 3)\n  ActivationRadius=(25.0)\n}\nAMBIENTSOUND=crowd\n{\n  FILE=X.WAV\n}\n")
-    (ref / "Layout" / "Sample.wet").write_text("wet")
+    (ref / "Layout" / "Sample.wet").write_text('//hdr\n[Weather Info]\nRealRoadTD="preset:Team_Light.rrbin"\n'
+                                               'RealRoadP2="natural"\n')
     (ref / "Layout" / "Team_Light.rrbin").write_bytes(b"rr")
     centreline = tmp_path / "centreline.csv"
     centreline.write_text("dist_m,x,y_up,z\n" + "".join(
@@ -102,6 +103,9 @@ def test_folder_layout(tmp_path):
     for f in ("Teesside_Kartingicon.tga", "Teesside_KartingThmb.tga", "Teesside_Karting_loading.jpg",
               "Teesside_KartingSMicon.dds", "Teesside_Karting.wet"):
         assert (layout / f).exists(), f
+    # The weather file must not point at the sample's RealRoad presets (rF2 crashes on a missing one).
+    wet = (layout / "Teesside_Karting.wet").read_text()
+    assert "preset:" not in wet and 'RealRoadTD="natural"' in wet and wet.startswith("//hdr")
     # RealRoad presets belong to the sample's road mesh: never copied, and old copies are cleaned up.
     assert not (layout / "Team_Light.rrbin").exists()
     (layout / "Team_Light.rrbin").write_bytes(b"rr")      # stale copy from an earlier version

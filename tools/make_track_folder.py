@@ -213,7 +213,8 @@ def write_icons(centreline_csv, layout_dir, root, folder, layout, track_name):
 
 
 def placeholder_copies(ref, layout_dir, layout):
-    """Copy the sample layout's weather file (.wet), renamed for this layout, unless it has its own.
+    """Copy the sample layout's weather file (.wet), renamed for this layout and with its RealRoad
+    presets switched to "natural", unless the layout has its own (edited) one.
 
     RealRoad presets (.rrbin) are NOT copied: they store rubber/dust per vertex of the sample track's
     road and rF2 rejects them on any other track. Copies made by earlier versions of this script
@@ -225,9 +226,23 @@ def placeholder_copies(ref, layout_dir, layout):
     made, removed = [], []
     for src in sample_gdb.parent.iterdir():
         ext = src.suffix.lower()
-        if ext == ".wet" and not any(p.suffix.lower() == ".wet" for p in layout_dir.iterdir()):
+        if ext == ".wet":
+            existing = [p for p in layout_dir.iterdir() if p.suffix.lower() == ".wet"]
+            # Replace our own earlier copies (generated marker, or identical to the sample); keep yours.
+            if existing and not (MARKER.encode() in existing[0].read_bytes()
+                                 or existing[0].read_bytes() == src.read_bytes()):
+                continue
+            for p in existing:
+                p.unlink()
+            text = src.read_bytes().decode("latin-1").replace("\r\n", "\n")
+            # The sample starts some sessions from its own RealRoad presets ("preset:X.rrbin"), which
+            # don't exist (or fit) here; "natural" lets rubber build up on this track instead.
+            text = re.sub(r'"preset:[^"]*"', '"natural"', text)
+            lines = text.split("\n")
+            lines.insert(1 if lines and lines[0].startswith("//") else 0,
+                         MARKER + ": the sample track's weather, RealRoad presets set to natural")
             dst = layout_dir / f"{layout}{src.suffix}"
-            shutil.copy2(src, dst)
+            write_crlf(dst, "\n".join(lines))
             made.append(dst)
         elif ext == ".rrbin":
             stale = layout_dir / src.name

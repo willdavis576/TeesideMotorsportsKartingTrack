@@ -115,4 +115,4 @@ def test_folder_layout(tmp_path):
     assert "Latitude = 54.57" in gdb and "Longitude = -1.18" in gdb
     assert "Length = 1.629 KM" in gdb
     assert "VenueIcon = TeessideKarting\\TeessideKartingIcon.dds" in gdb
-    assert "Filter Properties = rFRS TMOD NSCRS IndyCar\r\n" in gdb or "Filter Properties = rFRS TMOD NSCRS IndyCar\n" in gdb
+    assert "Filter Properties = rFRS TMOD NSCRS IndyCar\n" in gdb  # sample track's list; --filter adds more

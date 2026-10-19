@@ -104,7 +104,7 @@ Instance=SkyBoxi
 
 GDB = """{layout}
 {{
-  Filter Properties = rFRS TMOD NSCRS IndyCar
+  Filter Properties = {filters}
   Attrition = 30
   TrackName = {track_name}
   EventName = {track_name}
@@ -294,6 +294,9 @@ def main():
     ap.add_argument("--track-name", default="Teesside Karting")
     ap.add_argument("--venue", default="Teesside Motorsports")
     ap.add_argument("--centreline", default="build/centreline.csv", help="for the track-map icons")
+    ap.add_argument("--filter", nargs="*", default=[],
+                    help="extra vehicle classes allowed on the track (from the car's .veh 'Classes=' line), "
+                         "added to the sample track's list, e.g. --filter Kart")
     ap.add_argument("--control-clone", action="store_true",
                     help="also write ZZTestA, an exact renamed copy of the sample track, as a test")
     ap.add_argument("--no-placeholder-aiw", action="store_true",
@@ -343,7 +346,8 @@ def main():
     summary = json.loads(Path(args.summary).read_text())
     lon, lat = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True).transform(*summary["origin_bng"])
     km = summary["length_m"] / 1000
-    gdb = GDB.format(layout=args.layout, folder=args.folder, track_name=args.track_name, venue=args.venue,
+    filters = " ".join(dict.fromkeys(["rFRS", "TMOD", "NSCRS", "IndyCar", *args.filter]))
+    gdb = GDB.format(filters=filters, layout=args.layout, folder=args.folder, track_name=args.track_name, venue=args.venue,
                      km=km, miles=km / 1.609344, lat=lat, lon=lon, alt=summary["origin_alt_m"])
     write_crlf(layout_out / f"{args.layout}.gdb", gdb)
 

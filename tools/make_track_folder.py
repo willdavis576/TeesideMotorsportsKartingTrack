@@ -356,6 +356,11 @@ def main():
     gmt_out, maps_out, layout_out = root / "Assets" / "GMT", root / "Assets" / "Maps", root / args.layout
     for d in (gmt_out, maps_out, layout_out):
         d.mkdir(parents=True, exist_ok=True)
+    # Caches rF2 builds itself on first load (collision/HAT data, RealRoad shading). They belong to the
+    # build they were made from; a stale one can crash the next load, and rF2 rebuilds them if missing.
+    stale_caches = [p for p in layout_out.glob("*") if p.suffix.lower() in (".cbash", ".rrshd")]
+    for p in stale_caches:
+        p.unlink()
 
     gmts = sorted(gmt_dir.glob("*.gmt"))
     for g in gmts:
@@ -442,6 +447,8 @@ def main():
     print(f"Wrote {root}")
     print(f"  {len(gmts)} meshes + sky, {len(textures)} textures + sky texture, {len(blocks)} instances in the scene")
     print(f"  track info: {args.track_name}, {km:.3f} km, lat {lat:.5f} lon {lon:.5f}")
+    if stale_caches:
+        print(f"  deleted rF2's caches from the previous build: {', '.join(p.name for p in stale_caches)}")
     if aiw_state == "generated":
         print(f"  AIW: generated from {sample_aiw.name}: grid, pits and garages on Teesside's start straight "
               f"(you spawn just past the line); racing line is still the sample's, so record a Teesside one")

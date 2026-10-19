@@ -85,12 +85,17 @@ def test_folder_layout(tmp_path):
     cam = (root / "Teesside_Karting" / "Teesside_Karting.cam").read_text()
     assert cam.count("TrackingCam=") == 12 and "AMBIENTSOUND" not in cam
 
+    # rF2's own caches from a previous build are removed on a re-run.
+    (root / "Teesside_Karting" / "Teesside_Karting.cbash").write_bytes(b"cache")
+    (root / "Teesside_Karting" / "Teesside_Karting.rrshd").write_bytes(b"cache")
+
     # A real AIW recorded later is never overwritten by a re-run.
     aiw.write_text("recorded")
     subprocess.run([sys.executable, str(ROOT / "tools/make_track_folder.py"), "--gmt", str(gmt),
                     "--textures", str(tex), "--summary", str(summary), "--reference", str(ref),
                     "--out", str(out), "--centreline", str(centreline), "--control-clone"], check=True)
     assert aiw.read_text() == "recorded"
+    assert not list((root / "Teesside_Karting").glob("*.cbash")) and not list((root / "Teesside_Karting").glob("*.rrshd"))
 
     # Exactly one CR per line in the files rF2 parses (a doubled "\r\r\n" made rF2 skip the track).
     for f in ("Teesside_Karting.gdb", "Teesside_Karting.scn"):
